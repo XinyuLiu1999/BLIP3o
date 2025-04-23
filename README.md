@@ -1,14 +1,13 @@
-# CLIP-Flow: A Unified Model for Image Understanding and Generation
+# 🌌 CLIP-Flow: A Unified Foundation Model for Image Understanding and Generation via Diffusing CLIP Features
 
-CLIP-Flow is a unified multimodal foundation model that combines autoregressive large language models with diffusion-based generation techniques. Unlike existing approaches that diffuse VAE features, CLIP-Flow leverages CLIP image features as the diffusion target, enabling both efficient generation and strong performance across understanding and generation tasks. This repository contains the code, models, and experiments presented in our research paper.
+CLIP-Flow is a unified vision-language foundation model that combines the reasoning strength of large language models with the generative power of diffusion models. Unlike prior works that diffuse VAE features or raw pixels, CLIP-Flow diffuses semantically rich **CLIP image features**, enabling a powerful, efficient, and compositional architecture for both image understanding and generation.
 
-## Overview
+## ✨ Highlights
 
-CLIP-Flow bridges the gap between vision understanding and generation by:
-
-- Unifying the modeling of images and text under a single architecture.
-- Diffusing semantically meaningful CLIP features rather than raw pixels or VAE latents.
-- Demonstrating competitive performance in both zero-shot image understanding and high-quality image generation.
+- **Unified Architecture** for both image understanding and generation.
+- **CLIP Feature Diffusion**: Directly diffuses semantic vision features for stronger alignment and performance.
+- **State-of-the-art performance** across a wide range of benchmarks.
+- **Supports reasoning-based generation, semantic editing, and interleaved outputs.**
 
 ![CLIP-Flow Overview Figure](overall_arch.png)
 
@@ -109,3 +108,21 @@ This capability highlights CLIP-Flow’s potential in vision-language agents, di
 git clone https://github.com/your-username/CLIP-Flow.git
 cd CLIP-Flow
 pip install -r requirements.txt
+
+## 🚀 Getting Started
+
+To quickly test CLIP-Flow for either image understanding or image generation, follow the examples below.
+
+### Image Understanding
+
+Run zero-shot image classification on an input image:
+
+```bash
+python run_inference.py --task image_classification --input example.jpg
+
+### Image Generation
+
+Generate an image from a text prompt:
+
+```bash
+python generate_image.py --prompt "A mountain village under the stars"
