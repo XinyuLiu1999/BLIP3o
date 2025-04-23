@@ -108,7 +108,7 @@ This capability highlights CLIP-Flow’s potential in vision-language agents, di
 git clone https://github.com/your-username/CLIP-Flow.git
 cd CLIP-Flow
 pip install -r requirements.txt
-
+```
 ## 🚀 Getting Started
 
 To quickly test CLIP-Flow for either image understanding or image generation, follow the examples below.
@@ -119,10 +119,11 @@ Run zero-shot image classification on an input image:
 
 ```bash
 python run_inference.py --task image_classification --input example.jpg
-
+```
 ### Image Generation
 
 Generate an image from a text prompt:
 
 ```bash
 python generate_image.py --prompt "A mountain village under the stars"
+```
