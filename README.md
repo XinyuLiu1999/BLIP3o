@@ -67,6 +67,7 @@ We evaluate the image generation capability of CLIP-Flow on both unconditional a
 
 CLIP-Flow’s performance indicates that generating in CLIP-space leads to semantically aligned and visually coherent outputs.
 
+![CLIP-Flow Overview Figure](img_eval.png)
 ---
 
 ## 🧠 Novel Capabilities
