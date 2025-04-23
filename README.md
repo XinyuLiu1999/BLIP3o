@@ -18,6 +18,7 @@ CLIP-Flow is a unified vision-language foundation model that combines the reason
 ## 🔍 Image Understanding Performance
 
 CLIP-Flow achieves strong performance on standard benchmarks for image understanding.
+
 **Table: Results on image understanding benchmarks. Best results are highlighted in bold.**
 
 | Model             | VQAv2 | GQA  | MMBench | SEED | POPE | MM-Vet | MME-P   | MME-C   | MMMU | RWQA | TEXTVQA |
@@ -38,10 +39,6 @@ CLIP-Flow achieves strong performance on standard benchmarks for image understan
 | **CLIP-Flow 8B** | **83.1** | 60.5 | **83.5** | **77.5** | 87.5 | **66.6** | **1682.6** | **647.1** | **50.6** | **69.0** | **83.1** |
 
 
-
-*Table: Zero-shot classification accuracy across multiple datasets.*
-
-CLIP-Flow's ability to perform competitively without task-specific fine-tuning highlights the power of using semantically rich diffusion targets and unified modeling.
 
 ---
 
