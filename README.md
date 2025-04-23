@@ -60,7 +60,7 @@ We evaluate the image generation capability of CLIP-Flow on text-conditional gen
 | TokenFlow‑XL 14B  | 0.63    | 73.38     |
 | Janus 1.3B        | 0.61    | 79.68     |
 | Janus Pro 7B  | **0.80** | **84.19** |
-| **CLIP-Flow 8B** | 0.79 | -         |
+| **CLIP-Flow 8B** | 0.81 | 81.60         |
 
 *Table: Image generation results for image generation.*
 
