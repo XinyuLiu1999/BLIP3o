@@ -80,9 +80,9 @@ Below, we highlight three key applications that showcase the model’s versatili
 
 CLIP-Flow supports **reasoning-aware image generation**, enabling the model to generate images that require understanding complex textual instructions, abstract prompts, or multi-step inference. Unlike traditional models that rely on shallow keyword matching, CLIP-Flow utilizes its unified multimodal architecture to handle:
 
-- Step-by-step scene construction from compositional text.
-- Prompts involving logical or spatial reasoning (e.g., “a cat sitting **behind** a transparent glass full of lemons”).
-- Visual analogies and concept transformations.
+
+![CLIP-Flow Overview Figure](reasoning.png)
+*Figure: Qualitative results of Reasoning-Based image generation.*
 
 ### ✏️ Image Editing
 
