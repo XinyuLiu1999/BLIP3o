@@ -10,7 +10,7 @@ CLIP-Flow bridges the gap between vision understanding and generation by:
 - Diffusing semantically meaningful CLIP features rather than raw pixels or VAE latents.
 - Demonstrating competitive performance in both zero-shot image understanding and high-quality image generation.
 
-![CLIP-Flow Overview Figure](fig/overall_arch.png)
+![CLIP-Flow Overview Figure](overall_arch.png)
 
 *Figure: Overview of the CLIP-Flow architecture. The model learns to autoregressively generate images and text by diffusing CLIP features and decoding them through a shared transformer.*
 
