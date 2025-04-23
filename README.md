@@ -70,6 +70,39 @@ CLIP-Flow’s performance indicates that generating in CLIP-space leads to seman
 
 ---
 
+## 🧠 Novel Capabilities
+
+CLIP-Flow introduces a suite of novel capabilities that demonstrate its flexibility, reasoning ability, and multimodal fluency. Below, we highlight three key applications that showcase the model’s versatility beyond standard image generation and understanding benchmarks.
+
+### 🔍 Reasoning-Based Generation
+
+CLIP-Flow supports **reasoning-aware image generation**, enabling the model to synthesize visuals that require understanding complex textual instructions, abstract prompts, or multi-step inference. Unlike traditional models that rely on shallow keyword matching, CLIP-Flow utilizes its unified multimodal architecture to handle:
+
+- Step-by-step scene construction from compositional text.
+- Prompts involving logical or spatial reasoning (e.g., “a cat sitting **behind** a transparent glass full of lemons”).
+- Visual analogies and concept transformations.
+
+### ✏️ Image Editing
+
+Through conditioning on existing images and natural language prompts, CLIP-Flow enables **semantic image editing**. This includes:
+
+- Object insertion, deletion, or replacement.
+- Style or mood adjustments (e.g., “make it look like a winter night”).
+- Context-aware modifications while preserving background and structure.
+
+This ability is powered by our diffusion-over-CLIP-feature approach, which offers fine-grained control while maintaining semantic consistency.
+
+### 🔁 Interleaved Generation
+
+CLIP-Flow seamlessly supports **interleaved text and image generation**, allowing it to:
+
+- Autoregressively generate sequences that mix text and image tokens.
+- Respond with rich multimodal content in visually grounded conversations.
+- Produce structured outputs such as **storyboards, visual dialogues, or AI-generated comic strips**.
+
+This capability highlights CLIP-Flow’s potential in vision-language agents, digital storytelling, and multimodal assistant applications.
+
+
 ## 🔧 Installation
 
 ```bash
