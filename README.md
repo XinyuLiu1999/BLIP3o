@@ -1,4 +1,4 @@
-# 🌌 CLIP-Flow: A Unified Foundation Model for Image Understanding and Generation via Diffusing CLIP Features
+# 🌌 CLIP-Flow
 
 CLIP-Flow is a unified vision-language foundation model that combines the reasoning strength of large language models with the generative power of diffusion models. Unlike prior works that diffuse VAE features or raw pixels, CLIP-Flow diffuses semantically rich **CLIP image features**, enabling a powerful, efficient, and compositional architecture for both image understanding and generation.
 
