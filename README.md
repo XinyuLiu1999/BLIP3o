@@ -1,6 +1,6 @@
 # 🌌 CLIP-Flow
 
-CLIP-Flow is a unified vision-language foundation model that combines the reasoning strength of large language models with the generative power of diffusion models. Unlike prior works that diffuse VAE features or raw pixels, CLIP-Flow diffuses semantically rich **CLIP image features**, enabling a powerful, efficient, and compositional architecture for both image understanding and generation.
+CLIP-Flow is a unified vision-language foundation model that combines the reasoning and instruction following strength of large language models with the generative power of diffusion models. Unlike prior works that diffuse VAE features or raw pixels, CLIP-Flow diffuses semantically rich **CLIP image features**, enabling a powerful and efficient architecture for both image understanding and generation.
 
 ## ✨ Highlights
 
@@ -11,7 +11,11 @@ CLIP-Flow is a unified vision-language foundation model that combines the reason
 
 ![CLIP-Flow Overview Figure](overall_arch.png)
 
-*Figure: Overview of the CLIP-Flow architecture. The model learns to autoregressively generate images and text by diffusing CLIP features and decoding them through a shared transformer.*
+*Figure: Overview of the CLIP-Flow architecture. We use Flow Matching Loss to predict the ground truth CLIP embeddings. At inference, the autoregressive model first generates a sequence of visual tokens from the given conditioning, and those visual tokens are then passed to a diffusion transformer that decodes them into the final image.*
+
+
+
+
 
 ---
 
@@ -39,12 +43,11 @@ CLIP-Flow achieves strong performance on standard benchmarks for image understan
 | **CLIP-Flow 8B** | **83.1** | 60.5 | **83.5** | **77.5** | 87.5 | **66.6** | **1682.6** | **647.1** | **50.6** | **69.0** | **83.1** |
 
 
-
 ---
 
 ## 🖼️ Image Generation Performance
 
-We evaluate the image generation capability of CLIP-Flow on both unconditional and text-conditional generation tasks. The model produces diverse and high-fidelity samples that align well with textual prompts.
+We evaluate the image generation capability of CLIP-Flow on text-conditional generation tasks. The model produces diverse and high-fidelity samples that align well with textual prompts.
 
 | Model              | GenEval | DPG-Bench |
 |-------------------|---------|-----------|
@@ -59,20 +62,23 @@ We evaluate the image generation capability of CLIP-Flow on both unconditional a
 | Janus Pro 7B  | **0.80** | **84.19** |
 | **CLIP-Flow 8B** | 0.79 | -         |
 
-*Table: Image generation results. FID = Fréchet Inception Distance (lower is better), IS = Inception Score (higher is better).*
+*Table: Image generation results for image generation.*
 
-CLIP-Flow’s performance indicates that generating in CLIP-space leads to semantically aligned and visually coherent outputs.
+
 
 ![CLIP-Flow Overview Figure](img_eval.png)
+*Figure: Qualitative results of CLIP-Flow.*
+
+
 ---
 
 ## 🧠 Novel Capabilities
 
-CLIP-Flow introduces a suite of novel capabilities that demonstrate its flexibility, reasoning ability, and multimodal fluency. Below, we highlight three key applications that showcase the model’s versatility beyond standard image generation and understanding benchmarks.
+Below, we highlight three key applications that showcase the model’s versatility beyond standard image generation and understanding benchmarks.
 
 ### 🔍 Reasoning-Based Generation
 
-CLIP-Flow supports **reasoning-aware image generation**, enabling the model to synthesize visuals that require understanding complex textual instructions, abstract prompts, or multi-step inference. Unlike traditional models that rely on shallow keyword matching, CLIP-Flow utilizes its unified multimodal architecture to handle:
+CLIP-Flow supports **reasoning-aware image generation**, enabling the model to generate images that require understanding complex textual instructions, abstract prompts, or multi-step inference. Unlike traditional models that rely on shallow keyword matching, CLIP-Flow utilizes its unified multimodal architecture to handle:
 
 - Step-by-step scene construction from compositional text.
 - Prompts involving logical or spatial reasoning (e.g., “a cat sitting **behind** a transparent glass full of lemons”).
@@ -98,7 +104,7 @@ CLIP-Flow seamlessly supports **interleaved text and image generation**, allowin
 
 This capability highlights CLIP-Flow’s potential in vision-language agents, digital storytelling, and multimodal assistant applications.
 
-
+<!--
 ## 🔧 Installation
 
 ```bash
@@ -124,3 +130,4 @@ Generate an image from a text prompt:
 ```bash
 python generate_image.py --prompt "A mountain village under the stars"
 ```
+-->
