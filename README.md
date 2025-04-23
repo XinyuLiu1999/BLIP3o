@@ -53,11 +53,18 @@ CLIP-Flow's ability to perform competitively without task-specific fine-tuning h
 
 We evaluate the image generation capability of CLIP-Flow on both unconditional and text-conditional generation tasks. The model produces diverse and high-fidelity samples that align well with textual prompts.
 
-| Dataset    | FID ↓ | IS ↑ | CLIP-Flow | Baseline A | Baseline B |
-|------------|-------|------|-----------|------------|------------|
-| CIFAR-10   | 3.21  | 9.22 | ✅         | 3.85       | 8.74       |
-| MS-COCO    | 10.5  | —    | ✅         | 12.7       | —          |
-| CelebA-HQ  | 6.83  | —    | ✅         | 8.32       | —          |
+| Model              | GenEval | DPG-Bench |
+|-------------------|---------|-----------|
+| GPT-4o            | 0.84    | -         |
+| Chameleon 7B      | 0.39    | -         |
+| Seed-X 17B        | 0.51    | -         |
+| LLaVAFusion 16B   | 0.63    | -         |
+| Show‑o 1.3B       | 0.68    | 67.27     |
+| EMU3 8B           | 0.66    | 80.60     |
+| TokenFlow‑XL 14B  | 0.63    | 73.38     |
+| Janus 1.3B        | 0.61    | 79.68     |
+| Janus Pro 7B  | **0.80** | **84.19** |
+| **CLIP-Flow 8B** | **0.79** | -         |
 
 *Table: Image generation results. FID = Fréchet Inception Distance (lower is better), IS = Inception Score (higher is better).*
 
