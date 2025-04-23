@@ -92,17 +92,13 @@ Through conditioning on existing images and natural language prompts, CLIP-Flow 
 - Style or mood adjustments (e.g., “make it look like a winter night”).
 - Context-aware modifications while preserving background and structure.
 
-This ability is powered by our diffusion-over-CLIP-feature approach, which offers fine-grained control while maintaining semantic consistency.
+TODO.
 
-### 🔁 Interleaved Generation
+### 🔁 Multi-turn dialogue
 
-CLIP-Flow seamlessly supports **interleaved text and image generation**, allowing it to:
+A unified model that jointly supports image understanding and generation naturally enables in-context learning scenarios. Previously generated images can serve as context for subsequent tasks, enabling iterative image editing, visual dialogue, and step‑by‑step visual reasoning without mode switching or external pipelines.
 
-- Autoregressively generate sequences that mix text and image tokens.
-- Respond with rich multimodal content in visually grounded conversations.
-- Produce structured outputs such as **storyboards, visual dialogues, or AI-generated comic strips**.
-
-This capability highlights CLIP-Flow’s potential in vision-language agents, digital storytelling, and multimodal assistant applications.
+TODO
 
 <!--
 ## 🔧 Installation
