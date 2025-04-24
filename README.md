@@ -107,14 +107,3 @@ A unified model that jointly supports image understanding and generation natural
 TODO.
 
 ---
-
-## 🔧 Installation
-
-To get started with BLIP-3u, clone the repository and install the required dependencies:
-
-```bash
-git clone https://github.com/your-username/BLIP-3u.git
-cd BLIP-3u
-pip install -r requirements.txt
-```
----
