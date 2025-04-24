@@ -34,7 +34,7 @@ BLIP3-U achieves strong performance on standard benchmarks for image understandi
 
 | Model             | VQAv2 | GQA  | MMBench | SEED | POPE | MM-Vet | MME-P   | MME-C   | MMMU | RWQA | TEXTVQA |
 |------------------|-------|------|---------|------|------|--------|---------|---------|------|------|---------|
-| EMU2 Chat 34B     | -     | 65.1 | -       | 62.8 | -    | 48.5   | -       | -       | 34.1 | -    | 66.6    |
+| EMU2 Chat 34B     | -     | **65.1** | -       | 62.8 | -    | 48.5   | -       | -       | 34.1 | -    | 66.6    |
 | Chameleon 7B      | -     | -    | 19.8    | 27.2 | 19.4 | 8.3    | 202.7   | -       | 22.4 | 39.0 | 0.0     |
 | Chameleon 34B     | -     | -    | 32.7    | -    | 59.8 | 9.7    | 604.5   | -       | 38.8 | 39.2 | 0.0     |
 | Seed-X 17B        | 63.4  | 49.1 | 70.1    | 66.5 | 84.2 | 43.0   | 1457.0  | -       | 35.6 | -    | -       |
