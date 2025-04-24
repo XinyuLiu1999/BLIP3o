@@ -1,6 +1,6 @@
-# 🌌 BLIP3-u
+# 🌌 BLIP3-U
 
-BLIP3-u is a unified vision-language foundation model that combines the reasoning and instruction following strength of large language models with the generative power of diffusion models. Unlike prior works that diffuse VAE features or raw pixels, BLIP3-u diffuses semantically rich **CLIP image features**, enabling a powerful and efficient architecture for both image understanding and generation.
+BLIP3-U is a unified vision-language foundation model that combines the reasoning and instruction following strength of large language models with the generative power of diffusion models. Unlike prior works that diffuse VAE features or raw pixels, BLIP3-U diffuses semantically rich **CLIP image features**, enabling a powerful and efficient architecture for both image understanding and generation.
 
 ## ✨ Highlights
 
@@ -10,10 +10,10 @@ BLIP3-u is a unified vision-language foundation model that combines the reasonin
 - **Supports reasoning-based generation, semantic editing, and interleaved outputs.**
 
 <p align="center">
-  <img src="figure/overall_arch.png" alt="BLIP3-u Overview Figure" width="600"/>
+  <img src="figure/overall_arch.png" alt="BLIP3-U Overview Figure" width="600"/>
 </p>
 
-*Figure: Overview of the BLIP3-u architecture. We use Flow Matching Loss to predict the ground truth CLIP embeddings. At inference, the autoregressive model first generates a sequence of visual tokens from the given conditioning, and those visual tokens are then passed to a diffusion transformer that decodes them into the final image.*
+*Figure: Overview of the BLIP3-U architecture. We use Flow Matching Loss to predict the ground truth CLIP embeddings. At inference, the autoregressive model first generates a sequence of visual tokens from the given conditioning, and those visual tokens are then passed to a diffusion transformer that decodes them into the final image.*
 
 
 ---
@@ -28,7 +28,7 @@ You can try out BLIP-3u in your browser using our interactive [Gradio demo](http
 
 ## 🔍 Image Understanding Performance
 
-BLIP3-u achieves strong performance on standard benchmarks for image understanding.
+BLIP3-U achieves strong performance on standard benchmarks for image understanding.
 
 **Table: Results on image understanding benchmarks. Best results are highlighted in bold.**
 
@@ -46,14 +46,14 @@ BLIP3-u achieves strong performance on standard benchmarks for image understandi
 | TokenFlow-XL 14B  | 77.6  | 62.7 | 76.8    | 72.6 | **87.8** | 48.2   | 1551.1  | 371.1   | 43.2 | 56.6 | 77.6    |
 | Janus 1.3B        | 77.3  | 59.3 | 75.5    | 68.3 | 87.0 | 34.3   | 1338.0  | -       | 30.5 | -    | -       |
 | Janus Pro 7B      | -     | 62.0 | 79.2    | 72.1 | 87.4 | 50.0   | 1567.1  | -       | 41.0 | -    | -       |
-| **BLIP3-u 8B** | **83.1** | 60.5 | **83.5** | **77.5** | 87.5 | **66.6** | **1682.6** | **647.1** | **50.6** | **69.0** | **83.1** |
+| **BLIP3-U 8B** | **83.1** | 60.5 | **83.5** | **77.5** | 87.5 | **66.6** | **1682.6** | **647.1** | **50.6** | **69.0** | **83.1** |
 
 
 ---
 
 ## 🖼️ Image Generation Performance
 
-We evaluate the image generation capability of BLIP3-u on text-conditional generation tasks. The model produces diverse and high-fidelity samples that align well with textual prompts.
+We evaluate the image generation capability of BLIP3-U on text-conditional generation tasks. The model produces diverse and high-fidelity samples that align well with textual prompts.
 
 | Model              | GenEval | DPG-Bench |
 |-------------------|---------|-----------|
@@ -66,14 +66,14 @@ We evaluate the image generation capability of BLIP3-u on text-conditional gener
 | TokenFlow‑XL 14B  | 0.63    | 73.38     |
 | Janus 1.3B        | 0.61    | 79.68     |
 | Janus Pro 7B  | **0.80** | **84.19** |
-| **BLIP3-u 8B** | 0.81 | 81.60         |
+| **BLIP3-U 8B** | 0.81 | 81.60         |
 
 *Table: Image generation results for image generation.*
 
 
 
-![BLIP3-u Overview Figure](figure/img_eval.png)
-*Figure: Qualitative results of BLIP3-u.*
+![BLIP3-U Overview Figure](figure/img_eval.png)
+*Figure: Qualitative results of BLIP3-U.*
 
 
 ---
@@ -84,15 +84,15 @@ Below, we highlight three key applications that showcase the model’s versatili
 
 ### 🔍 Reasoning-Based Generation
 
-BLIP3-u supports **reasoning-aware image generation**, enabling the model to generate images that require understanding complex textual instructions, abstract prompts, or multi-step inference. Unlike traditional models that rely on shallow keyword matching, BLIP3-u utilizes its unified multimodal architecture to handle:
+BLIP3-U supports **reasoning-aware image generation**, enabling the model to generate images that require understanding complex textual instructions, abstract prompts, or multi-step inference. Unlike traditional models that rely on shallow keyword matching, BLIP3-U utilizes its unified multimodal architecture to handle:
 
 
-![BLIP3-u Overview Figure](figure/reasoning.png)
+![BLIP3-U Overview Figure](figure/reasoning.png)
 *Figure: Qualitative results of Reasoning-Based image generation.*
 
 ### ✏️ Image Editing
 
-Through conditioning on existing images and natural language prompts, BLIP3-u enables **semantic image editing**. This includes:
+Through conditioning on existing images and natural language prompts, BLIP3-U enables **semantic image editing**. This includes:
 
 - Object insertion, deletion, or replacement.
 - Style or mood adjustments (e.g., “make it look like a winter night”).
