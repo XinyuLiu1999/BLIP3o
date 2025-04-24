@@ -128,3 +128,116 @@ Generate an image from a text prompt:
 python generate_image.py --prompt "A mountain village under the stars"
 ```
 -->
+
+---
+
+## 🔧 Installation
+
+To get started with BLIP-3u, clone the repository and install the required dependencies:
+
+```bash
+git clone https://github.com/your-username/BLIP-3u.git
+cd BLIP-3u
+pip install -r requirements.txt
+```
+
+Make sure your environment includes Python 3.8+ and PyTorch 1.12+ with CUDA if using a GPU.
+
+---
+
+## 🚀 Inference
+
+BLIP-3u supports multiple inference tasks, including image understanding and text-conditioned image generation.
+
+### 🧠 Image Understanding
+
+Run zero-shot image classification:
+
+```bash
+python run_inference.py \
+    --task image_classification \
+    --input_path path/to/image.jpg
+```
+
+Visual Question Answering (VQA):
+
+```bash
+python run_inference.py \
+    --task vqa \
+    --input_path path/to/image.jpg \
+    --question "What is the cat sitting on?"
+```
+
+### 🎨 Image Generation
+
+Generate an image from a textual prompt:
+
+```bash
+python generate_image.py \
+    --prompt "A fantasy castle floating in the clouds" \
+    --output_path output.jpg
+```
+
+Advanced settings for image editing or interleaved generation can be toggled via command-line arguments in the script.
+
+---
+
+## 📊 Evaluation
+
+To evaluate BLIP-3u on image understanding or generation benchmarks, follow these steps:
+
+### Step 1: Prepare
+
+Download pretrained checkpoints and dataset files (see `scripts/download_data.sh`).
+
+### Step 2: Evaluate a specific task
+
+```bash
+python evaluate.py \
+    --task image_understanding \
+    --checkpoint path/to/blip3u.ckpt
+```
+
+Replace `image_understanding` with other supported tasks like `image_generation`, `vqa`, `mm-vet`, or `gen-eval`.
+
+### Step 3: Full benchmark suite
+
+Run evaluations across all tasks:
+
+```bash
+bash scripts/run_all_evals.sh
+```
+
+Evaluation logs and metrics will be saved to `./results/`.
+
+---
+
+## 🏋️ Training
+
+You can train BLIP-3u from scratch or fine-tune on custom datasets.
+
+### Single-GPU or CPU training
+
+```bash
+python train.py \
+    --config configs/train_blip3u.yaml \
+    --output_dir ./checkpoints/blip3u
+```
+
+### Multi-GPU training (distributed)
+
+```bash
+torchrun --nproc_per_node=8 train.py \
+    --config configs/train_blip3u.yaml
+```
+
+Modify `configs/train_blip3u.yaml` to set:
+- Dataset paths
+- Model architecture
+- Training schedule (steps, batch size, learning rate)
+- Task-specific parameters (e.g., diffusion depth, prompt conditioning)
+
+For more details, check the `configs/README.md` file.
+
+---
+
