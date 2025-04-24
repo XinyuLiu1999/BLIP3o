@@ -65,8 +65,8 @@ We evaluate the image generation capability of BLIP3-U on text-conditional gener
 | EMU3 8B           | 0.66    | 80.60     |
 | TokenFlow‑XL 14B  | 0.63    | 73.38     |
 | Janus 1.3B        | 0.61    | 79.68     |
-| Janus Pro 7B  | **0.80** | **84.19** |
-| **BLIP3-U 8B (Ours)** | 0.81 | 81.60         |
+| JanusFlow 1.3B        | 0.63    | 80.09     |
+| **BLIP3-U 8B (Ours)** | **0.81** | **81.60**         |
 
 *Table: Image generation results for image generation.*
 
