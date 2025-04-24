@@ -8,7 +8,7 @@ BLIP3-U is a unified vision-language foundation model that combines the reasonin
 
 - **Fully Open-Source** Fully open-source training data (Pretraining and Instruction Tuning), training recipe, model weights, code.
 - **Unified Architecture** for both image understanding and generation.
-- **CLIP Feature Diffusion**: Directly diffuses semantic vision features for stronger alignment and performance.
+- **CLIP Feature Diffusion** Directly diffuses semantic vision features for stronger alignment and performance.
 - **State-of-the-art performance** across a wide range of benchmarks.
 - **Supports reasoning-based generation, semantic editing, and interleaved outputs.**
 
