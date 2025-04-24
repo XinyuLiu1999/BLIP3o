@@ -16,6 +16,15 @@ BLIP3-U is a unified vision-language foundation model that combines the reasonin
 *Figure: Overview of the BLIP3-u architecture. We use Flow Matching Loss to predict the ground truth CLIP embeddings. At inference, the autoregressive model first generates a sequence of visual tokens from the given conditioning, and those visual tokens are then passed to a diffusion transformer that decodes them into the final image.*
 
 
+---
+
+## 🚀 Demo
+
+You can try out BLIP-3u in your browser using our interactive [Gradio demo]([https://your-gradio-link.com](https://c15a85dd865a925007.gradio.live/)).
+
+Alternatively, you can launch the demo locally using:
+
+---
 
 
 
@@ -99,35 +108,7 @@ TODO.
 
 A unified model that jointly supports image understanding and generation naturally enables in-context learning scenarios. Previously generated images can serve as context for subsequent tasks, enabling iterative image editing, visual dialogue, and step‑by‑step visual reasoning without mode switching or external pipelines.
 
-TODO
-
-<!--
-## 🔧 Installation
-
-```bash
-git clone https://github.com/your-username/BLIP3-u.git
-cd BLIP3-u
-pip install -r requirements.txt
-```
-## 🚀 Getting Started
-
-To quickly test BLIP3-u for either image understanding or image generation, follow the examples below.
-
-### Image Understanding
-
-Run zero-shot image classification on an input image:
-
-```bash
-python run_inference.py --task image_classification --input example.jpg
-```
-### Image Generation
-
-Generate an image from a text prompt:
-
-```bash
-python generate_image.py --prompt "A mountain village under the stars"
-```
--->
+TODO.
 
 ---
 
@@ -145,11 +126,11 @@ Make sure your environment includes Python 3.8+ and PyTorch 1.12+ with CUDA if u
 
 ---
 
-## 🚀 Inference
+## Inference
 
 BLIP-3u supports multiple inference tasks, including image understanding and text-conditioned image generation.
 
-### 🧠 Image Understanding
+### Image Understanding
 
 Run zero-shot image classification:
 
@@ -168,7 +149,7 @@ python run_inference.py \
     --question "What is the cat sitting on?"
 ```
 
-### 🎨 Image Generation
+### Image Generation
 
 Generate an image from a textual prompt:
 
