@@ -46,7 +46,7 @@ BLIP3-U achieves strong performance on standard benchmarks for image understandi
 | TokenFlow-XL 14B  | 77.6  | 62.7 | 76.8    | 72.6 | **87.8** | 48.2   | 1551.1  | 371.1   | 43.2 | 56.6 | 77.6    |
 | Janus 1.3B        | 77.3  | 59.3 | 75.5    | 68.3 | 87.0 | 34.3   | 1338.0  | -       | 30.5 | -    | -       |
 | Janus Pro 7B      | -     | 62.0 | 79.2    | 72.1 | 87.4 | 50.0   | 1567.1  | -       | 41.0 | -    | -       |
-| **BLIP3-U 8B** | **83.1** | 60.5 | **83.5** | **77.5** | 87.5 | **66.6** | **1682.6** | **647.1** | **50.6** | **69.0** | **83.1** |
+| **BLIP3-U 8B (Ours)** | **83.1** | 60.5 | **83.5** | **77.5** | 87.5 | **66.6** | **1682.6** | **647.1** | **50.6** | **69.0** | **83.1** |
 
 
 ---
@@ -66,7 +66,7 @@ We evaluate the image generation capability of BLIP3-U on text-conditional gener
 | TokenFlow‑XL 14B  | 0.63    | 73.38     |
 | Janus 1.3B        | 0.61    | 79.68     |
 | Janus Pro 7B  | **0.80** | **84.19** |
-| **BLIP3-U 8B** | 0.81 | 81.60         |
+| **BLIP3-U 8B (Ours)** | 0.81 | 81.60         |
 
 *Table: Image generation results for image generation.*
 
