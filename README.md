@@ -84,7 +84,7 @@ We evaluate the image generation capability of BLIP3-U on text-conditional gener
 
 Below, we highlight three key applications that showcase the model’s versatility beyond standard image generation and understanding benchmarks.
 
-### 🔍 Reasoning-Based Generation
+### 🧩 Reasoning-Based Generation
 
 BLIP3-U supports **reasoning-aware image generation**, enabling the model to generate images that require understanding complex textual instructions, abstract prompts, or multi-step inference. Unlike traditional models that rely on shallow keyword matching, BLIP3-U utilizes its unified multimodal architecture to handle:
 
