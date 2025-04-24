@@ -1,0 +1,7 @@
+1. tokenizer add 4 special tokens and find token id
+2. change prepare input function
+3. change loss function
+4. change input images from string to list
+5. debug
+6. write text generation function
+7. write image generation function
