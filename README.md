@@ -1,6 +1,6 @@
 # 🌌 BLIP3-U
 
-BLIP-3u is a unified vision-language foundation model that combines the reasoning and instruction following strength of large language models with the generative power of diffusion models. Unlike prior works that diffuse VAE features or raw pixels, BLIP-3u diffuses semantically rich **CLIP image features**, enabling a powerful and efficient architecture for both image understanding and generation.
+BLIP3-U is a unified vision-language foundation model that combines the reasoning and instruction following strength of large language models with the generative power of diffusion models. Unlike prior works that diffuse VAE features or raw pixels, BLIP-3u diffuses semantically rich **CLIP image features**, enabling a powerful and efficient architecture for both image understanding and generation.
 
 ## ✨ Highlights
 
