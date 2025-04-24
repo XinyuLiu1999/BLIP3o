@@ -20,7 +20,7 @@ BLIP3-U is a unified vision-language foundation model that combines the reasonin
 
 ## 🚀 Demo
 
-You can try out BLIP-3u in your browser using our interactive [Gradio demo](https://c15a85dd865a925007.gradio.live/).
+You can try out BLIP3-U in your browser using our interactive [Gradio demo](https://c15a85dd865a925007.gradio.live/).
 
 
 
