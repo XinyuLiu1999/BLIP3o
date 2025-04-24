@@ -82,7 +82,7 @@ Below, we highlight three key applications that showcase the model’s versatili
 BLIP-3u supports **reasoning-aware image generation**, enabling the model to generate images that require understanding complex textual instructions, abstract prompts, or multi-step inference. Unlike traditional models that rely on shallow keyword matching, BLIP-3u utilizes its unified multimodal architecture to handle:
 
 
-![BLIP-3u Overview Figure](reasoning.png)
+![BLIP-3u Overview Figure](figure/reasoning.png)
 *Figure: Qualitative results of Reasoning-Based image generation.*
 
 ### ✏️ Image Editing
