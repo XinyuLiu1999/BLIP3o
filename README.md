@@ -1,6 +1,6 @@
-# 🌌 CLIP-Flow
+# 🌌 BLIP-3u
 
-CLIP-Flow is a unified vision-language foundation model that combines the reasoning and instruction following strength of large language models with the generative power of diffusion models. Unlike prior works that diffuse VAE features or raw pixels, CLIP-Flow diffuses semantically rich **CLIP image features**, enabling a powerful and efficient architecture for both image understanding and generation.
+BLIP-3u is a unified vision-language foundation model that combines the reasoning and instruction following strength of large language models with the generative power of diffusion models. Unlike prior works that diffuse VAE features or raw pixels, BLIP-3u diffuses semantically rich **CLIP image features**, enabling a powerful and efficient architecture for both image understanding and generation.
 
 ## ✨ Highlights
 
@@ -10,10 +10,10 @@ CLIP-Flow is a unified vision-language foundation model that combines the reason
 - **Supports reasoning-based generation, semantic editing, and interleaved outputs.**
 
 <p align="center">
-  <img src="overall_arch.png" alt="CLIP-Flow Overview Figure" width="600"/>
+  <img src="overall_arch.png" alt="BLIP-3u Overview Figure" width="600"/>
 </p>
 
-*Figure: Overview of the CLIP-Flow architecture. We use Flow Matching Loss to predict the ground truth CLIP embeddings. At inference, the autoregressive model first generates a sequence of visual tokens from the given conditioning, and those visual tokens are then passed to a diffusion transformer that decodes them into the final image.*
+*Figure: Overview of the BLIP-3u architecture. We use Flow Matching Loss to predict the ground truth CLIP embeddings. At inference, the autoregressive model first generates a sequence of visual tokens from the given conditioning, and those visual tokens are then passed to a diffusion transformer that decodes them into the final image.*
 
 
 
@@ -23,7 +23,7 @@ CLIP-Flow is a unified vision-language foundation model that combines the reason
 
 ## 🔍 Image Understanding Performance
 
-CLIP-Flow achieves strong performance on standard benchmarks for image understanding.
+BLIP-3u achieves strong performance on standard benchmarks for image understanding.
 
 **Table: Results on image understanding benchmarks. Best results are highlighted in bold.**
 
@@ -41,14 +41,14 @@ CLIP-Flow achieves strong performance on standard benchmarks for image understan
 | TokenFlow-XL 14B  | 77.6  | 62.7 | 76.8    | 72.6 | **87.8** | 48.2   | 1551.1  | 371.1   | 43.2 | 56.6 | 77.6    |
 | Janus 1.3B        | 77.3  | 59.3 | 75.5    | 68.3 | 87.0 | 34.3   | 1338.0  | -       | 30.5 | -    | -       |
 | Janus Pro 7B      | -     | 62.0 | 79.2    | 72.1 | 87.4 | 50.0   | 1567.1  | -       | 41.0 | -    | -       |
-| **CLIP-Flow 8B** | **83.1** | 60.5 | **83.5** | **77.5** | 87.5 | **66.6** | **1682.6** | **647.1** | **50.6** | **69.0** | **83.1** |
+| **BLIP-3u 8B** | **83.1** | 60.5 | **83.5** | **77.5** | 87.5 | **66.6** | **1682.6** | **647.1** | **50.6** | **69.0** | **83.1** |
 
 
 ---
 
 ## 🖼️ Image Generation Performance
 
-We evaluate the image generation capability of CLIP-Flow on text-conditional generation tasks. The model produces diverse and high-fidelity samples that align well with textual prompts.
+We evaluate the image generation capability of BLIP-3u on text-conditional generation tasks. The model produces diverse and high-fidelity samples that align well with textual prompts.
 
 | Model              | GenEval | DPG-Bench |
 |-------------------|---------|-----------|
@@ -61,14 +61,14 @@ We evaluate the image generation capability of CLIP-Flow on text-conditional gen
 | TokenFlow‑XL 14B  | 0.63    | 73.38     |
 | Janus 1.3B        | 0.61    | 79.68     |
 | Janus Pro 7B  | **0.80** | **84.19** |
-| **CLIP-Flow 8B** | 0.81 | 81.60         |
+| **BLIP-3u 8B** | 0.81 | 81.60         |
 
 *Table: Image generation results for image generation.*
 
 
 
-![CLIP-Flow Overview Figure](img_eval.png)
-*Figure: Qualitative results of CLIP-Flow.*
+![BLIP-3u Overview Figure](img_eval.png)
+*Figure: Qualitative results of BLIP-3u.*
 
 
 ---
@@ -79,15 +79,15 @@ Below, we highlight three key applications that showcase the model’s versatili
 
 ### 🔍 Reasoning-Based Generation
 
-CLIP-Flow supports **reasoning-aware image generation**, enabling the model to generate images that require understanding complex textual instructions, abstract prompts, or multi-step inference. Unlike traditional models that rely on shallow keyword matching, CLIP-Flow utilizes its unified multimodal architecture to handle:
+BLIP-3u supports **reasoning-aware image generation**, enabling the model to generate images that require understanding complex textual instructions, abstract prompts, or multi-step inference. Unlike traditional models that rely on shallow keyword matching, BLIP-3u utilizes its unified multimodal architecture to handle:
 
 
-![CLIP-Flow Overview Figure](reasoning.png)
+![BLIP-3u Overview Figure](reasoning.png)
 *Figure: Qualitative results of Reasoning-Based image generation.*
 
 ### ✏️ Image Editing
 
-Through conditioning on existing images and natural language prompts, CLIP-Flow enables **semantic image editing**. This includes:
+Through conditioning on existing images and natural language prompts, BLIP-3u enables **semantic image editing**. This includes:
 
 - Object insertion, deletion, or replacement.
 - Style or mood adjustments (e.g., “make it look like a winter night”).
@@ -105,13 +105,13 @@ TODO
 ## 🔧 Installation
 
 ```bash
-git clone https://github.com/your-username/CLIP-Flow.git
-cd CLIP-Flow
+git clone https://github.com/your-username/BLIP-3u.git
+cd BLIP-3u
 pip install -r requirements.txt
 ```
 ## 🚀 Getting Started
 
-To quickly test CLIP-Flow for either image understanding or image generation, follow the examples below.
+To quickly test BLIP-3u for either image understanding or image generation, follow the examples below.
 
 ### Image Understanding
 
