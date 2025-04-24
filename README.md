@@ -10,7 +10,7 @@ BLIP-3u is a unified vision-language foundation model that combines the reasonin
 - **Supports reasoning-based generation, semantic editing, and interleaved outputs.**
 
 <p align="center">
-  <img src="overall_arch.png" alt="BLIP-3u Overview Figure" width="600"/>
+  <img src="figure/overall_arch.png" alt="BLIP-3u Overview Figure" width="600"/>
 </p>
 
 *Figure: Overview of the BLIP-3u architecture. We use Flow Matching Loss to predict the ground truth CLIP embeddings. At inference, the autoregressive model first generates a sequence of visual tokens from the given conditioning, and those visual tokens are then passed to a diffusion transformer that decodes them into the final image.*
@@ -67,7 +67,7 @@ We evaluate the image generation capability of BLIP-3u on text-conditional gener
 
 
 
-![BLIP-3u Overview Figure](img_eval.png)
+![BLIP-3u Overview Figure](figure/img_eval.png)
 *Figure: Qualitative results of BLIP-3u.*
 
 
