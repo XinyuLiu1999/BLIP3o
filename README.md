@@ -10,7 +10,7 @@ CLIP-Flow is a unified vision-language foundation model that combines the reason
 - **Supports reasoning-based generation, semantic editing, and interleaved outputs.**
 
 <p align="center">
-  <img src="overall_arch.png" alt="CLIP-Flow Overview Figure" width="400"/>
+  <img src="overall_arch.png" alt="CLIP-Flow Overview Figure" width="600"/>
 </p>
 
 *Figure: Overview of the CLIP-Flow architecture. We use Flow Matching Loss to predict the ground truth CLIP embeddings. At inference, the autoregressive model first generates a sequence of visual tokens from the given conditioning, and those visual tokens are then passed to a diffusion transformer that decodes them into the final image.*
