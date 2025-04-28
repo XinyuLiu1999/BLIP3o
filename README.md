@@ -70,7 +70,7 @@ We evaluate the image generation capability of BLIP3-U on text-conditional gener
 | TokenFlow‑XL 14B  | 0.63    | 73.38     |
 | Janus 1.3B        | 0.61    | 79.68     |
 | JanusFlow 1.3B        | 0.63    | 80.09     |
-| **BLIP3-U 8B (Ours)** | **0.81** | **81.60**         |
+| **BLIP3-U 8B (Ours)** | **0.82** | **82.60**         |
 
 *Table: Image generation results for image generation.*
 
@@ -90,9 +90,10 @@ Below, we highlight three key applications that showcase the model’s versatili
 
 BLIP3-U supports **reasoning-aware image generation**, enabling the model to generate images that require understanding complex textual instructions, abstract prompts, or multi-step inference. Unlike traditional models that rely on shallow keyword matching, BLIP3-U utilizes its unified multimodal architecture to handle:
 
-
+<!--
 ![BLIP3-U Overview Figure](figure/reasoning.png)
 *Figure: Qualitative results of Reasoning-Based image generation.*
+-->
 
 ### ✏️ Image Editing
 
