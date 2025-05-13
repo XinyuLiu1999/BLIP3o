@@ -35,7 +35,28 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-For most training data, we use webdataset to load tar file, and you can download data as follow:
+# Supported Tasks
+
+- **Text → Text**  
+- **Text → Image** (Image Generation)  
+- **Image → Text** (Image Understanding)  
+- **Image → Image** (Image Editing)  
+- **Multitask Training** (Image generation and undetstanding mix training)
+
+# Supported Autoregressive Backbones
+
+- **Qwen-2.5-VL**  
+- **LLaMA 3**
+
+# Supported Dataset Format
+
+- **Webdataset**  
+- **Json**
+
+
+# Data Loading
+
+Most of our training data use **WebDataset** from tar archives. To download and prepare the datasets:
 
 [Pretrain](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain)
 
