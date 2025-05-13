@@ -35,26 +35,36 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-# Supported Tasks
+## Supported Tasks
 
 - **Text → Text**  
+- **Image → Text** (Image Understanding) 
 - **Text → Image** (Image Generation)  
-- **Image → Text** (Image Understanding)  
 - **Image → Image** (Image Editing)  
 - **Multitask Training** (Image generation and undetstanding mix training)
 
-# Supported Autoregressive Backbones
+
+## Supported Image Generation
+
+- **CLIP + MSE**  
+- **CLIP + Flow Matching** 
+- **VAE + Flow Matching** 
+- **Transfusion, LMFusion** 
+
+
+
+## Supported Autoregressive Backbones
 
 - **Qwen-2.5-VL**  
 - **LLaMA 3**
 
-# Supported Dataset Format
+## Supported Dataset Format
 
 - **Webdataset**  
 - **Json**
 
 
-# Data Loading
+## Data Loading
 
 Most of our training data use **WebDataset** from tar archives. To download and prepare the datasets:
 
