@@ -13,7 +13,7 @@ export HF_HOME=/fsx/sfr/data/jiuhai
 
 
 srun torchrun --nnodes=$SLURM_NNODES --nproc_per_node=8 \
-    --rdzv_id=$SLURM_JOB_ID --rdzv_backend=c10d --rdzv_endpoint=$HOSTNAME:29501 blip3u/train/train_mem.py \
+    --rdzv_id=$SLURM_JOB_ID --rdzv_backend=c10d --rdzv_endpoint=$HOSTNAME:29501 blip3o/train/train_mem.py \
     --deepspeed ./scripts/zero1.json \
     --model_name_or_path meta-llama/Llama-3.2-1B-Instruct \
     --version qwen \
@@ -48,7 +48,7 @@ srun torchrun --nnodes=$SLURM_NNODES --nproc_per_node=8 \
     --n_query 64 \
     --n_und_query 0 \
     --report_to wandb \
-    --run_name blip3u_qwen_vl_7b
+    --run_name blip3o_qwen_vl_7b
 
 
 

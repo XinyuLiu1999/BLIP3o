@@ -13,14 +13,14 @@ import os
 import json
 from tqdm import tqdm
 import shortuuid
-from blip3u.constants import *
-from blip3u.conversation import conv_templates, SeparatorStyle
-from blip3u.model.builder import load_pretrained_model
-from blip3u.utils import disable_torch_init
-from blip3u.mm_utils import tokenizer_image_token, process_images, get_model_name_from_path
+from blip3o.constants import *
+from blip3o.conversation import conv_templates, SeparatorStyle
+from blip3o.model.builder import load_pretrained_model
+from blip3o.utils import disable_torch_init
+from blip3o.mm_utils import tokenizer_image_token, process_images, get_model_name_from_path
 import math
 import requests
-from blip3u.conversation import conv_templates, SeparatorStyle
+from blip3o.conversation import conv_templates, SeparatorStyle
 from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
 import base64
 from io import BytesIO
@@ -58,7 +58,7 @@ tokenizer, multi_model, context_len = load_pretrained_model(model_path, None, mo
 
 pipe = DiffusionPipeline.from_pretrained(
    diffusion_path,
-   custom_pipeline="pipeline_blip3u_gen",
+   custom_pipeline="pipeline_blip3o_gen",
    torch_dtype=torch.bfloat16,
    use_safetensors=True,
    variant="bf16",
@@ -364,15 +364,15 @@ def set_global_seed(seed=42):
 
 
 
-os.makedirs(os.path.join('/fsx/home/jiuhai.chen/interleaved-blip3u-2', f'visualization_{save_folder}'), exist_ok=True)
+os.makedirs(os.path.join('/fsx/home/jiuhai.chen/interleaved-blip3o-2', f'visualization_{save_folder}'), exist_ok=True)
 
 
 
 images = [
-'/fsx/home/jiuhai.chen/interleaved-blip3u/getty_overfit/1001615122.jpg',
-'/fsx/home/jiuhai.chen/interleaved-blip3u/getty_overfit/1006555508.jpg',
-'/fsx/home/jiuhai.chen/interleaved-blip3u/getty_overfit/1019063528.jpg',
-'/fsx/home/jiuhai.chen/interleaved-blip3u/getty_overfit/1024197308.jpg'
+'/fsx/home/jiuhai.chen/interleaved-blip3o/getty_overfit/1001615122.jpg',
+'/fsx/home/jiuhai.chen/interleaved-blip3o/getty_overfit/1006555508.jpg',
+'/fsx/home/jiuhai.chen/interleaved-blip3o/getty_overfit/1019063528.jpg',
+'/fsx/home/jiuhai.chen/interleaved-blip3o/getty_overfit/1024197308.jpg'
 ]
 
 for img in images:
@@ -386,7 +386,7 @@ for img in images:
     grid_image = create_image_grid(gen_images, 1, 1)
     basename = os.path.basename(img)
     number_str = os.path.splitext(basename)[0]
-    grid_image.save(os.path.join('/fsx/home/jiuhai.chen/interleaved-blip3u-2', f'visualization_{save_folder}', f"{number_str}_0.png"))
+    grid_image.save(os.path.join('/fsx/home/jiuhai.chen/interleaved-blip3o-2', f'visualization_{save_folder}', f"{number_str}_0.png"))
 
 
 
@@ -405,7 +405,7 @@ for prompt in captions:
 
     
     grid_image = create_image_grid(gen_images, 2, 2)
-    grid_image.save(os.path.join('/fsx/home/jiuhai.chen/interleaved-blip3u-2', f'visualization_{save_folder}', f"{prompt[:100]}_{4}.png"))
+    grid_image.save(os.path.join('/fsx/home/jiuhai.chen/interleaved-blip3o-2', f'visualization_{save_folder}', f"{prompt[:100]}_{4}.png"))
 
 
 
