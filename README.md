@@ -35,6 +35,11 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+For most training data, we use webdataset to load tar file, and you can download data as follow:
+
+[Pretrain](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain)
+
+[BLIP3o-60k](https://huggingface.co/datasets/BLIP3o/BLIP3o-60k)
 
 <!-- ---
 
