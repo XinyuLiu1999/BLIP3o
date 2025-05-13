@@ -27,6 +27,14 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 You can try out BLIP3-U in your browser using our interactive [Gradio demo](https://4bd64ad729624ad54e.gradio.live).
 
 
+Install package for tranining
+```Shell
+conda create -n blip3o python=3.11 -y
+conda activate blip3o
+pip install --upgrade pip  
+pip install -r requirements.txt
+```
+
 
 <!-- ---
 
@@ -111,4 +119,4 @@ A unified model that jointly supports image understanding and generation natural
 
 TODO.
 
---- --> -->
+--- --> 
