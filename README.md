@@ -21,10 +21,10 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 
 ---
 
-## 🚀 Demo
+## Demo
 
 
-You can try out BLIP3-U in your browser using our interactive [Gradio demo](https://4bd64ad729624ad54e.gradio.live).
+You can try out BLIP3-o in your browser using our interactive [Gradio demo](https://4bd64ad729624ad54e.gradio.live).
 
 
 Install package for tranining
@@ -35,6 +35,23 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+## Model Checkpoint
+
+```Shell
+BLIP3o-4B [4B](https://huggingface.co/BLIP3o/BLIP3o-Model).
+BLIP3o-8B [8B](https://huggingface.co/BLIP3o/BLIP3o-Model).
+```
+
+
+## CLIP + Diffusion (Encoder + Decoder)
+We also provide two CLIP + Diffusion: 
+
+```Shell
+[EVACLIP + SDXL](https://huggingface.co/BLIP3o/BLIP3o-Model).
+[SigLIP + SANA](https://huggingface.co/BLIP3o/BLIP3o-Model).
+```
+
+
 ## Supported Tasks
 
 - **Text → Text**  
@@ -44,7 +61,7 @@ pip install -r requirements.txt
 - **Multitask Training** (Image generation and undetstanding mix training)
 
 
-## Supported Image Generation
+## Supported Image Generation Methods
 
 - **CLIP + MSE**  
 - **CLIP + Flow Matching** 
@@ -57,6 +74,7 @@ pip install -r requirements.txt
 
 - **Qwen-2.5-VL**  
 - **LLaMA 3**
+
 
 ## Supported Dataset Format
 
