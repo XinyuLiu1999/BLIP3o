@@ -73,7 +73,7 @@ We evaluate the image generation capability of BLIP3-U on text-conditional gener
 | **BLIP3-o 8B (Ours)** | **0.84** | **82.60**         |
 
 *Table: Image generation results for image generation.* -->
- -->
+
 
 
 ![BLIP3-o Overview Figure](figure/image.png)
@@ -95,7 +95,7 @@ BLIP3-U supports **reasoning-aware image generation**, enabling the model to gen
 *Figure: Qualitative results of Reasoning-Based image generation.*
 -->
 
-### ✏️ Image Editing
+<!-- ### ✏️ Image Editing
 
 Through conditioning on existing images and natural language prompts, BLIP3-U enables **semantic image editing**. This includes:
 
@@ -111,4 +111,4 @@ A unified model that jointly supports image understanding and generation natural
 
 TODO.
 
---- -->
+--- --> -->
