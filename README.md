@@ -6,10 +6,10 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 
 ## ✨ Highlights
 
-- **Fully Open-Source** Fully open-source training data (Pretraining and Instruction Tuning), training recipe, model weights, code.
-- **Unified Architecture** for both image understanding and generation.
-- **CLIP Feature Diffusion** Directly diffuses semantic vision features for stronger alignment and performance.
-- **State-of-the-art performance** across a wide range of image understanding and generation benchmarks.
+- **Fully Open-Source:** Fully open-source training data (Pretraining and Instruction Tuning), training recipe, model weights, code.
+- **Unified Architecture:** for both image understanding and generation.
+- **CLIP Feature Diffusion:** Directly diffuses semantic vision features for stronger alignment and performance.
+- **State-of-the-art performance:** across a wide range of image understanding and generation benchmarks.
 
 
 <!-- <p align="center">
