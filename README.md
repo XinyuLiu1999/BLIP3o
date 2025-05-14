@@ -84,7 +84,7 @@ We also provide two CLIP + Diffusion:
 
 ## Data Loading
 
-Most of our training data use **WebDataset** from tar archives. To download and prepare the datasets:
+Most of our training data use Huggingface datasets to load **WebDataset**. To download the datasets:
 
 [Pretrain](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain)
 
