@@ -37,16 +37,18 @@ pip install -r requirements.txt
 
 ## Model Checkpoint
 
-BLIP3o-4B [4B](https://huggingface.co/BLIP3o/BLIP3o-Model).
-BLIP3o-8B [8B](https://huggingface.co/BLIP3o/BLIP3o-Model).
+BLIP3o-4B [4B](https://huggingface.co/BLIP3o/BLIP3o-Model)
+
+BLIP3o-8B [8B](https://huggingface.co/BLIP3o/BLIP3o-Model)
 
 
 
 ## CLIP + Diffusion (Encoder + Decoder)
 We also provide two CLIP + Diffusion: 
 
-[EVA-CLIP + SDXL](https://huggingface.co/BLIP3o/BLIP3o-Model).
-[SigLIP + SANA](https://huggingface.co/BLIP3o/BLIP3o-Model).
+[EVA-CLIP + SDXL](https://huggingface.co/BLIP3o/BLIP3o-Model)
+
+[SigLIP + SANA](https://huggingface.co/BLIP3o/BLIP3o-Model)
 
 
 
