@@ -2,7 +2,7 @@
 
 BLIP3-o is a unified multimodal model that combines the reasoning and instruction following strength of autoregressive models with the generative power of diffusion models. Unlike prior works that diffuse VAE features or raw pixels, BLIP3-o diffuses semantically rich **CLIP image features**, enabling a powerful and efficient architecture for both image understanding and generation.
 
-## 📖 Paper is coming soon!
+## 📖 [Arxiv](http://arxiv.org/abs/2505.09568)
 
 ## ✨ Highlights
 
@@ -24,7 +24,7 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 ## Demo
 
 
-You can try out BLIP3-o in your browser using our interactive [Gradio demo](https://4bd64ad729624ad54e.gradio.live).
+You can try out BLIP3-o in your browser using our interactive [Demo](https://blip3o.salesforceresearch.ai/).
 
 
 Install package for tranining
