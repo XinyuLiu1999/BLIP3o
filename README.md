@@ -24,7 +24,7 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 ## Demo
 
 
-You can try out BLIP3-o in your browser using our interactive [Demo](https://blip3o.salesforceresearch.ai/).
+You can try out BLIP3-o in your browser using our interactive [Demo](https://blip3o.salesforceresearch.ai/). (Due to high usage, we’re currently updating the demo and will have it back online shortly.)
 
 
 Install package for tranining
