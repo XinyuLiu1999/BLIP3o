@@ -662,7 +662,7 @@ class LazySupervisedMixDataset(Dataset):
                         images = processor.preprocess(images, return_tensors="pt")["pixel_values"]
                     return images
 
-                if sources["type"] == "T2I" or sources["type"] == "Shutterstocks_I2I":
+                if sources["type"] == "T2I" or sources["type"] == "I2I":
                     image_files = self.list_data_dict[i]["image"]
                 else:
                     image_files = self.list_data_dict[i]["image_path"]
