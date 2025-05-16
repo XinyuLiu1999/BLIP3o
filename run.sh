@@ -1,21 +1,16 @@
 #!/bin/bash
 
-export CONDA_ROOT=/fsx/home/jiuhai.chen/miniconda3
-source $CONDA_ROOT/etc/profile.d/conda.sh
-conda  activate  diff_clip_2
+conda activate  blip3o
 
-export WANDB_API_KEY='d8075df78a873149bb390d22e6fc2c6de539e365'
 
-export HF_HOME=/fsx/sfr/data/jiuhai
+# export HF_HOME=/HF/Home/
 
 
 
-
-
-srun torchrun --nnodes=$SLURM_NNODES --nproc_per_node=8 \
-    --rdzv_id=$SLURM_JOB_ID --rdzv_backend=c10d --rdzv_endpoint=$HOSTNAME:29501 blip3o/train/train_mem.py \
-    --deepspeed ./scripts/zero1.json \
-    --model_name_or_path meta-llama/Llama-3.2-1B-Instruct \
+torchrun --nproc_per_node=8 \
+    blip3o/train/train_mem.py \
+    --deepspeed ./deepspeed_scripts/zero1.json \
+    --model_name_or_path Qwen/Qwen2.5-VL-7B-Instruct  \
     --version qwen \
     --data_type "mix" \
     --gen_vision_tower eva-clip-E-14-plus \
@@ -25,7 +20,7 @@ srun torchrun --nnodes=$SLURM_NNODES --nproc_per_node=8 \
     --mm_use_im_start_end False \
     --mm_use_im_patch_token False \
     --bf16 True \
-    --output_dir {OUTPUT_FOLDER}\
+    --output_dir /Your/Model/Output \
     --num_train_epochs 1 \
     --per_device_train_batch_size 16 \
     --per_device_eval_batch_size 4 \
@@ -34,10 +29,11 @@ srun torchrun --nnodes=$SLURM_NNODES --nproc_per_node=8 \
     --save_strategy "steps" \
     --save_steps 1000 \
     --save_total_limit 1 \
-    --learning_rate 2e-5 \
+    --learning_rate 1e-4 \
     --weight_decay 0. \
     --warmup_ratio 0.003 \
-    --lr_scheduler_type "cosine" \
+    --lr_scheduler_type "cosine_with_min_lr" \
+    --lr_scheduler_kwargs '{"min_lr":1e-5}' \
     --model_max_length 512 \
     --logging_steps 1 \
     --tf32 True \
@@ -47,7 +43,7 @@ srun torchrun --nnodes=$SLURM_NNODES --nproc_per_node=8 \
     --gen_pooling early_pool2d_4 \
     --n_query 64 \
     --n_und_query 0 \
-    --report_to wandb \
+    --report_to none \
     --run_name blip3o_qwen_vl_7b
 
 
