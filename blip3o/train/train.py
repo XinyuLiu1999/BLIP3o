@@ -574,9 +574,9 @@ class LazySupervisedMixDataset(Dataset):
 
         data_files = glob.glob('/fsx/sfr/data/jiuhai/cc12m/*.tar') 
         ## text to image
-        train_dataset = load_dataset("webdataset", data_files=data_files, cache_dir='/fsx/sfr/data/jiuhai/getty_caption', split="train", num_proc=128)
+        train_dataset = load_dataset("webdataset", data_files=data_files, cache_dir='/fsx/sfr/data/jiuhai/caption', split="train", num_proc=128)
         train_dataset = train_dataset.rename_column("jpg", "image")
-        train_dataset = train_dataset.add_column('type', len(train_dataset) * ['Shutterstocks_T2I'])
+        train_dataset = train_dataset.add_column('type', len(train_dataset) * ['T2I'])
         train_dataset = train_dataset.add_column('image_path', len(train_dataset) * [None])
         train_dataset = train_dataset.remove_columns([col for col in train_dataset.column_names if not col in (
             ["image", "txt", "type", "image_path"])])
@@ -619,14 +619,14 @@ class LazySupervisedMixDataset(Dataset):
         while True:
             sources = self.list_data_dict[i]
 
-            if sources["type"] == "Shutterstocks_T2I" or sources["type"] == "journeyDB_T2I":
+            if sources["type"] == "T2I" or sources["type"] == "journeyDB_T2I":
                 sources["conversations"] = [
                     {"from": "human", "value": f"Please generate image based on the following caption: {sources['txt']}"},
                     {"from": "gpt", "value": "<image>"},
                 ]
 
 
-            elif sources["type"] == "Shutterstocks_I2I" or sources["type"] == "journeyDB_I2I":
+            elif sources["type"] == "I2I" or sources["type"] == "journeyDB_I2I":
                 sources["conversations"] = [
                     {
                         "from": "human",
@@ -662,7 +662,7 @@ class LazySupervisedMixDataset(Dataset):
                         images = processor.preprocess(images, return_tensors="pt")["pixel_values"]
                     return images
 
-                if sources["type"] == "Shutterstocks_T2I" or sources["type"] == "Shutterstocks_I2I":
+                if sources["type"] == "T2I" or sources["type"] == "Shutterstocks_I2I":
                     image_files = self.list_data_dict[i]["image"]
                 else:
                     image_files = self.list_data_dict[i]["image_path"]
@@ -678,7 +678,7 @@ class LazySupervisedMixDataset(Dataset):
 
                 for img in image_files:
                     try:
-                        if sources["type"] == "Shutterstocks_T2I" or sources["type"] == "Shutterstocks_I2I":
+                        if sources["type"] == "T2I" or sources["type"] == "I2I":
                             img = img.convert("RGB")
                         elif sources["type"] == "journeyDB_T2I" or sources["type"] == "journeyDB_I2I":
                             if sources["type"] == "journeyDB_T2I" or sources["type"] == "journeyDB_I2I":
