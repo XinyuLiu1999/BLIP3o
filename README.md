@@ -29,7 +29,7 @@ You can try out BLIP3-o in your browser using our interactive [Demo](https://bli
 You can also download our chekpoint and run the inference code
 
 ```Shell
-python inference.py  /chekcpoint/path/
+python inference.py  /checkpoint/path/
 ```
 
 Install package for tranining
