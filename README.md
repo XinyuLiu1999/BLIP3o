@@ -26,6 +26,12 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 
 You can try out BLIP3-o in your browser using our interactive [Demo](https://blip3o.salesforceresearch.ai/). 
 
+You can also download our chekpoint and run the inference code
+
+```Shell
+python inference.py  /chekcpoint/path/
+```
+
 Install package for tranining
 ```Shell
 conda create -n blip3o python=3.11 -y
