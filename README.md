@@ -26,11 +26,7 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 
 You can try out BLIP3-o in your browser using our interactive [Demo](https://blip3o.salesforceresearch.ai/). 
 
-You can also download our chekpoint and run the inference code
 
-```Shell
-python inference.py  /checkpoint/path/
-```
 
 Install package for tranining
 ```Shell
@@ -46,6 +42,11 @@ BLIP3o-4B [4B](https://huggingface.co/BLIP3o/BLIP3o-Model)
 
 BLIP3o-8B [8B](https://huggingface.co/BLIP3o/BLIP3o-Model)
 
+You can  download our chekpoint and run the inference code
+
+```Shell
+python inference.py  /checkpoint/path/
+```
 
 
 ## CLIP + Diffusion (Encoder + Decoder)
