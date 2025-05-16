@@ -30,7 +30,7 @@ Install package for tranining
 ```Shell
 conda create -n blip3o python=3.11 -y
 conda activate blip3o
-pip install --upgrade pip  
+pip install --upgrade pip  setuptools
 pip install -r requirements.txt
 ```
 
