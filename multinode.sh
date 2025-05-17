@@ -7,7 +7,7 @@
 
 
 # export HF_HOME=/HF/Home/
-# export OUTPUT_FOLDER=/Model/Output
+# export OUTPUT_FOLDER=/Your/Model/Output/
 
 
 
@@ -24,7 +24,7 @@ srun torchrun --nnodes=$SLURM_NNODES --nproc_per_node=8 \
     --mm_use_im_start_end False \
     --mm_use_im_patch_token False \
     --bf16 True \
-    --output_dir /Your/Model/Output \
+    --output_dir ${OUTPUT} \
     --num_train_epochs 1 \
     --per_device_train_batch_size 16 \
     --per_device_eval_batch_size 4 \
