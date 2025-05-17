@@ -66,7 +66,7 @@ python inference.py  /HF_model/checkpoint/path/
 ## Training
 We include two scripts: **slurm.sh** for multi-node training on Slurm clusters, and **run.sh** for debugging or running on other systems.
 
-For both **slurm.sh** and **run.sh**, you need to import the HF_HOME and output model save directory. 
+For both **slurm.sh** and **run.sh**, you need to import huggingface home **HF_HOME**, training data folder **IMG_FOLDER** and output model save folder **OUTPUT_FOLDER**. 
 
 
 ## CLIP + Diffusion (Encoder + Decoder)
