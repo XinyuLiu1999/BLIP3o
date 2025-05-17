@@ -105,7 +105,7 @@ We also provide two CLIP + Diffusion:
 
 - **Qwen-2.5-VL**  
 - **LLaMA 3**
-
+We suggest to use Qwen-2.5-VL as the backbone, we are fixing some tokenizer issues for LLama3.
 
 ## Supported Dataset Format
 
