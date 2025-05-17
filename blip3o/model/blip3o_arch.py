@@ -275,7 +275,7 @@ class blip3oMetaForCausalLM(ABC):
 
 
         prompt_image_embeds = gen_vision_tower(gen_images) # TODO: check dimension
-        # breakpoint()
+      
         if 'early' in self.get_gen_pooling():
             prompt_image_embeds = self.pool_img(prompt_image_embeds)
         target_image_embeds = torch.clone(prompt_image_embeds).detach()
@@ -350,7 +350,7 @@ class blip3oMetaForCausalLM(ABC):
         text_embeds = self.get_model().embed_tokens(input_ids)
         # N_QUERY = self.get_n_query()
         gen_img_idx = torch.logical_and(output_indicator, image_idx)
-        # breakpoint()
+       
         # if not target_image_embeds is None:
         text_embeds = text_embeds.clone() 
         text_embeds[gen_img_idx] = latent_queries
@@ -358,7 +358,7 @@ class blip3oMetaForCausalLM(ABC):
         # target_image_embeds = target_image_embeds.to(text_embeds.device)[:gen_img_idx.sum(),:]
 
         und_img_idx = torch.logical_and(input_indicator, und_image_idx)
-        # breakpoint()
+     
 
         if not und_images is None:
             text_embeds[und_img_idx] = und_image_embeds.to(text_embeds.device)[:und_img_idx.sum(), :]
