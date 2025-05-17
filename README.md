@@ -31,6 +31,7 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 ## Demo
 
 
+
 You can try out BLIP3-o in your browser using our interactive [Demo](https://blip3o.salesforceresearch.ai/). 
 
 
@@ -51,10 +52,16 @@ BLIP3o-8B [8B](https://huggingface.co/BLIP3o/BLIP3o-Model)
 
 ## Inference
 
-You can  download our chekpoint and run the inference code
+You can  download our chekpoint
 
 ```Shell
-python inference.py  /checkpoint/path/
+python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='BLIP3o/BLIP3o-Model', repo_type=‘models’)”
+```
+
+and run the inference code
+
+```Shell
+python inference.py  /HF_model/checkpoint/path/
 ```
 ## Training
 We include two scripts: **slurm.sh** for multi-node training on Slurm clusters, and **run.sh** for debugging or running on other systems.
