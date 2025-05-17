@@ -569,8 +569,7 @@ class LazySupervisedMixDataset(Dataset):
 
 
         ###################################### text to image ####################################### 
-
-        data_files = glob.glob('/fsx/home/jiuhai.chen/cc12m/*.tar') 
+        data_files = glob.glob(os.path.join(self.data_args.image_folder, "*.tar"))
         ## text to image
         train_dataset = load_dataset("webdataset", data_files=data_files, split="train", num_proc=128)
         train_dataset = train_dataset.rename_column("jpg", "image")
