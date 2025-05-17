@@ -49,11 +49,17 @@ BLIP3o-4B [4B](https://huggingface.co/BLIP3o/BLIP3o-Model)
 
 BLIP3o-8B [8B](https://huggingface.co/BLIP3o/BLIP3o-Model)
 
+## Inference
+
 You can  download our chekpoint and run the inference code
 
 ```Shell
 python inference.py  /checkpoint/path/
 ```
+## Training
+We include two scripts: **slurm.sh** for multi-node training on Slurm clusters, and **run.sh** for debugging or running on other systems.
+
+For both **slurm.sh** and **run.sh**, you need to import the HF_HOME and output model save directory. 
 
 
 ## CLIP + Diffusion (Encoder + Decoder)
