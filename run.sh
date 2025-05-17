@@ -3,8 +3,9 @@
 conda activate  blip3o
 
 
-# export HF_HOME=/HF/Home/
-# export OUTPUT=/Your/Model/Output
+export HF_HOME=/HF/Home/
+export OUTPUT_FOLDER=/Your/Model/Output/
+export IMG_FOLDER=/Your/Image/Folder
 
 
 torchrun --nproc_per_node=8 \
@@ -13,6 +14,7 @@ torchrun --nproc_per_node=8 \
     --model_name_or_path Qwen/Qwen2.5-VL-7B-Instruct  \
     --version qwen \
     --data_type "mix" \
+    --image_folder ${IMG_FOLDER} \
     --gen_vision_tower eva-clip-E-14-plus \
     --gen_projector_type mlp2x_gelu \
     --mm_projector_type mlp2x_gelu \
