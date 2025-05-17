@@ -6,7 +6,7 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 
 ## Update
 
-- [2025/05/16] 🔥 We’ve published a dataset of images with around 20 million detailed captions [BLIP3o Pretrain](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain). All images and their detailed captions are compressed into tar archives, **no separate image downloads or manual unzipping required**. 
+- [2025/05/16] 🔥 We’ve published a dataset of 20 million images with detailed captions [BLIP3o Pretrain](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain). All images and their detailed captions are compressed into tar archives, **no separate image downloads or manual unzipping required**. 
 
 
 
