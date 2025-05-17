@@ -77,9 +77,7 @@ class DataArguments:
     lazy_preprocess: bool = False
     is_multimodal: bool = False
     image_folder: Optional[str] = field(default=None)
-    pixelprose_image_folder: Optional[str] = field(default=None)
-    datacomp_shortcaption_image_folder: Optional[str] = field(default=None)
-    datacomp_longcaption_image_folder: Optional[str] = field(default=None)
+    shortcaption_image_folder: Optional[str] = field(default=None)
     data_type: Optional[str] = field(default="mix")
     image_aspect_ratio: str = "square"
 
@@ -574,7 +572,7 @@ class LazySupervisedMixDataset(Dataset):
 
         data_files = glob.glob('/fsx/home/jiuhai.chen/cc12m/*.tar') 
         ## text to image
-        train_dataset = load_dataset("webdataset", data_files=data_files[0], cache_dir='/fsx/sfr/data/jiuhai/caption', split="train", num_proc=128)
+        train_dataset = load_dataset("webdataset", data_files=data_files, split="train", num_proc=128)
         train_dataset = train_dataset.rename_column("jpg", "image")
         train_dataset = train_dataset.add_column('type', len(train_dataset) * ['T2I'])
         train_dataset = train_dataset.add_column('image_path', len(train_dataset) * [None])
