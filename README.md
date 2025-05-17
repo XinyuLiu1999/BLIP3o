@@ -6,6 +6,18 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 
 ## Update
 
+- [2025/05/16] 🔥 We’ve published a dataset of images with around 20 million detailed captions [BLIP3o Pretrain](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain). All images and their detailed captions are compressed into tar archives, no separate image downloads or manual unzipping required. You can download the datasets by
+```Shell
+python -c "from huggingface_hub import snapshot_download; print(snapshot_download(repo_id='BLIP3o/BLIP3o-Pretrain', repo_type='dataset'))"
+```
+And load them directly with HuggingFace WebDataset
+```Shell
+train_dataset = load_dataset("webdataset", data_files=data_files, split="train", num_proc=128)
+```
+
+
+
+
 - [2025/05/16] 🔥 We’ve reorganized and cleaned up the repository to ensure a clear, well-structured codebase. Please give the training and inference scripts a try, and feel free to leave an issue if you run into any problems. We apologize for any confusion caused by our original codebase release.
 
 
