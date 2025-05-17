@@ -55,7 +55,7 @@ BLIP3o-8B [8B](https://huggingface.co/BLIP3o/BLIP3o-Model)
 You can  download our chekpoint
 
 ```Shell
-python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='BLIP3o/BLIP3o-Model', repo_type=‘models’)”
+python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='BLIP3o/BLIP3o-Model', repo_type=‘model’)”
 ```
 
 and run the inference code
