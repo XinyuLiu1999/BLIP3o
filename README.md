@@ -6,7 +6,7 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 
 ## Update
 
-- [2025/05/16] 🔥 We’ve published a dataset of 20 million images with detailed captions [BLIP3o Pretrain Long Caption](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Long-Caption) and 4 million images with short caption [BLIP3o Pretrain Short Caption](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Short-Caption). All images and their captions are compressed into tar archives, **no separate image url downloads or manual unzipping required**.
+- [2025/05/16] 🔥 We’ve published a dataset of 20 million images with detailed captions [BLIP3o Pretrain Long Caption](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Long-Caption) and 4 million images with short caption [BLIP3o Pretrain Short Caption](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Short-Caption). All images and their captions are compressed into tar archives, **no separate image url downloads or manual unzipping required**. 
 
 
 
@@ -73,13 +73,15 @@ We include two scripts: **slurm.sh** for multi-node training on Slurm clusters, 
 
 For both **slurm.sh** and **run.sh**, you need to import huggingface home **HF_HOME**, training data folder **IMG_FOLDER** and output model save folder **OUTPUT_FOLDER**. 
 
+For our open source model training, we combine the pretraining dataset, including both long and short captions, images from JourneyDB. You can download [JourneyDB](https://huggingface.co/datasets/JourneyDB/JourneyDB). When training the diffusion transformer from scratch, we recommend using a large number of training steps along with a cosine annealing learning rate schedule that decays from 1×10⁻⁴ down to 1×10⁻⁵.
+
 
 ## CLIP + Diffusion (Encoder + Decoder)
 We also provide two CLIP + Diffusion: 
 
-[EVA-CLIP + SDXL](https://huggingface.co/BLIP3o/BLIP3o-Model)
+[EVA-CLIP + SDXL]: The model checkpoint already includes the diffusion decoder [diffusion-decoder](https://huggingface.co/BLIP3o/BLIP3o-Model/tree/main/diffusion-decoder). The EVA-CLIP vision tower weights can be downloaded here [EVA-CLIP](https://huggingface.co/jiuhai/eva_clip_vision_tower), the preprocess of EVA-CLIP is in the training code [EVA-CLIP-preprocess](https://github.com/JiuhaiChen/BLIP3o/tree/main/blip3o/model/multimodal_encoder/eva_clip).
 
-[SigLIP + SANA](https://huggingface.co/BLIP3o/BLIP3o-Model)
+[SigLIP + SANA]: [coming soon]
 
 
 
