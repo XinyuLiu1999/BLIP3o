@@ -54,7 +54,7 @@ pip install -r requirements.txt
 
 ## Model Checkpoint
 
-BLIP3o-4B [4B](https://huggingface.co/BLIP3o/BLIP3o-Model)
+BLIP3o-4B [4B](https://huggingface.co/BLIP3o/BLIP3o-Model-4B)
 
 BLIP3o-8B [8B](https://huggingface.co/BLIP3o/BLIP3o-Model)
 
