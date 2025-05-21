@@ -144,7 +144,9 @@ train_dataset = load_dataset("webdataset", data_files=data_files, split="train",
 
 
 ### Join Discussion
-Welcome to discuss with us if you have any questions
+Welcome to discuss with us if you have any questions.
+Discord: https://discord.gg/SsVYdV84bw
+or Wechat
 <p align="center">
 <img src="figure/wechat_1.jpg" width="256">
 </p>
