@@ -142,3 +142,23 @@ train_dataset = load_dataset("webdataset", data_files=data_files, split="train",
 *Figure: Qualitative results of BLIP3-o.*
 
 
+
+### Join Discussion
+Welcome to discuss with us if you have any questions
+<p align="center">
+<img src="figure/wechat_1.jpg" width="256">
+</p>
+
+
+### Citation
+To cite the paper and model
+```
+@article{chen2025blip3,
+  title={BLIP3-o: A Family of Fully Open Unified Multimodal Models-Architecture, Training and Dataset},
+  author={Chen, Jiuhai and Xu, Zhiyang and Pan, Xichen and Hu, Yushi and Qin, Can and Goldstein, Tom and Huang, Lifu and Zhou, Tianyi and Xie, Saining and Savarese, Silvio and others},
+  journal={arXiv preprint arXiv:2505.09568},
+  year={2025}
+}
+```
+
+
