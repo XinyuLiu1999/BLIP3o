@@ -1,0 +1,141 @@
+{
+  "results": {
+    "mme": {
+      "alias": "mme",
+      "mme_cognition_score,none": 653.2142857142858,
+      "mme_cognition_score_stderr,none": "N/A",
+      "mme_perception_score,none": 1683.7919167667067,
+      "mme_perception_score_stderr,none": "N/A"
+    }
+  },
+  "group_subtasks": {
+    "mme": []
+  },
+  "configs": {
+    "mme": {
+      "task": "mme",
+      "dataset_path": "lmms-lab/MME",
+      "dataset_kwargs": {
+        "token": true
+      },
+      "test_split": "test",
+      "full_docs": false,
+      "process_results_use_image": false,
+      "doc_to_visual": "<function mme_doc_to_visual at 0x7ff7d50af880>",
+      "doc_to_text": "<function mme_doc_to_text at 0x7ff7d50afec0>",
+      "doc_to_target": "answer",
+      "process_results": "<function mme_process_results at 0x7ff7d51104a0>",
+      "description": "",
+      "target_delimiter": " ",
+      "fewshot_delimiter": "\n\n",
+      "num_fewshot": 0,
+      "metric_list": [
+        {
+          "metric": "mme_perception_score",
+          "aggregation": "<function mme_aggregate_results at 0x7ff7d5110a40>",
+          "higher_is_better": true
+        },
+        {
+          "metric": "mme_cognition_score",
+          "aggregation": "<function mme_aggregate_results at 0x7ff7d5110f40>",
+          "higher_is_better": true
+        }
+      ],
+      "output_type": "generate_until",
+      "generation_kwargs": {
+        "max_new_tokens": 16,
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "num_beams": 1,
+        "do_sample": false,
+        "until": [
+          "\n\n"
+        ]
+      },
+      "repeats": 1,
+      "should_decontaminate": false,
+      "metadata": [
+        {
+          "version": 0.0
+        }
+      ],
+      "lmms_eval_specific_kwargs": {
+        "default": {
+          "pre_prompt": "",
+          "post_prompt": "\nAnswer the question using a single word or phrase."
+        },
+        "gpt4v": {
+          "pre_prompt": "",
+          "post_prompt": "\nAnswer the question with Yes or No."
+        },
+        "qwen_vl": {
+          "pre_prompt": "",
+          "post_prompt": " Answer:"
+        },
+        "otterhd": {
+          "pre_prompt": "",
+          "post_prompt": " Answer:"
+        },
+        "xcomposer2_4khd": {
+          "pre_prompt": "[UNUSED_TOKEN_146]user\n",
+          "post_prompt": " Answer this question briefly[UNUSED_TOKEN_145]\n[UNUSED_TOKEN_146]assistant\n"
+        },
+        "plm": {
+          "pre_prompt": "",
+          "post_prompt": ""
+        },
+        "pre_prompt": "",
+        "post_prompt": "\nAnswer the question using a single word or phrase."
+      }
+    }
+  },
+  "versions": {
+    "mme": "Yaml"
+  },
+  "n-shot": {
+    "mme": 0
+  },
+  "higher_is_better": {
+    "mme": {
+      "mme_perception_score": true,
+      "mme_cognition_score": true
+    }
+  },
+  "n-samples": {
+    "mme": {
+      "original": 2374,
+      "effective": 2374
+    }
+  },
+  "config": {
+    "model": "blip3o",
+    "model_args": "pretrained=BLIP3o/BLIP3o-Model",
+    "batch_size": "1",
+    "batch_sizes": [],
+    "device": null,
+    "use_cache": null,
+    "limit": null,
+    "bootstrap_iters": 100000,
+    "gen_kwargs": "",
+    "random_seed": 0,
+    "numpy_seed": 1234,
+    "torch_seed": 1234,
+    "fewshot_seed": 1234
+  },
+  "git_hash": "46ace66",
+  "date": "20250523_063403",
+  "task_hashes": {
+    "mme": "37a6daf3517a230d3fbe10eee9b020f60e53e79498ec84fb917164c92c811b19"
+  },
+  "model_source": "blip3o",
+  "model_name": "BLIP3o/BLIP3o-Model",
+  "model_name_sanitized": "BLIP3o__BLIP3o-Model",
+  "system_instruction": null,
+  "system_instruction_sha": null,
+  "fewshot_as_multiturn": false,
+  "chat_template": null,
+  "chat_template_sha": null,
+  "start_time": 3561625.160623686,
+  "end_time": 3561822.449001432,
+  "total_evaluation_time_seconds": "197.28837774600834"
+}
