@@ -568,6 +568,18 @@ class LazySupervisedMixDataset(Dataset):
         list_data_dict = []
 
 
+        # load journeyDB_T2I data
+        # train_dataset = load_dataset("json", data_files='/fsx/sfr/data/jiuhai/hub/datasets--JourneyDB--JourneyDB/snapshots/e191aa61ca37e5e4418707ade4df5deb5c6d5d8f/data/train/train_caption_only.jsonl', split="train", num_proc=64)
+        # train_dataset = train_dataset.add_column('type', len(train_dataset) * ['journeyDB_T2I'])
+        # train_dataset = train_dataset.add_column('image', len(train_dataset) * [None])
+        # train_dataset = train_dataset.rename_column("caption", "txt")
+        # train_dataset = train_dataset.rename_column("img_path", "image_path")
+        # train_dataset = train_dataset.remove_columns([col for col in train_dataset.column_names if not col in (
+        #     ["txt", "image", "type", "image_path"])])
+        # print(f"finish loading journeyDB {len(train_dataset)}")
+        
+
+
         ###################################### text to image ####################################### 
         data_files = glob.glob(os.path.join(self.data_args.image_folder, "*.tar"))
         ## text to image
