@@ -65,9 +65,9 @@ pip install -r requirements.txt
 
 ## Model Checkpoint
 
-BLIP3o-4B [4B](https://huggingface.co/BLIP3o/BLIP3o-Model-4B)
+### BLIP3o-4B [4B](https://huggingface.co/BLIP3o/BLIP3o-Model-4B)
 
-BLIP3o-8B [8B](https://huggingface.co/BLIP3o/BLIP3o-Model)
+### BLIP3o-8B [8B](https://huggingface.co/BLIP3o/BLIP3o-Model)
 
 ## Inference
 
@@ -93,9 +93,9 @@ For our open source model training, we combine the pretraining dataset, includin
 ## CLIP + Diffusion (Encoder + Decoder)
 We also provide two CLIP + Diffusion: 
 
-[EVA-CLIP + SDXL]: The model checkpoint already includes the diffusion decoder [diffusion-decoder](https://huggingface.co/BLIP3o/BLIP3o-Model/tree/main/diffusion-decoder). The EVA-CLIP vision tower weights can be downloaded here [EVA-CLIP](https://huggingface.co/jiuhai/eva_clip_vision_tower), the preprocess of EVA-CLIP is in the training code [EVA-CLIP-preprocess](https://github.com/JiuhaiChen/BLIP3o/tree/main/blip3o/model/multimodal_encoder/eva_clip).
+**[EVA-CLIP + SDXL]**: The model checkpoint already includes the diffusion decoder [diffusion-decoder](https://huggingface.co/BLIP3o/BLIP3o-Model/tree/main/diffusion-decoder). The EVA-CLIP vision tower weights can be downloaded here [EVA-CLIP](https://huggingface.co/jiuhai/eva_clip_vision_tower), the preprocess of EVA-CLIP is in the training code [EVA-CLIP-preprocess](https://github.com/JiuhaiChen/BLIP3o/tree/main/blip3o/model/multimodal_encoder/eva_clip).
 
-[SigLIP2 + SANA]: The model checkpoint is available here [SigLIP2_SANA ](https://huggingface.co/BLIP3o/SigLIP2_SANA). 
+**[SigLIP2 + SANA]**: The model checkpoint is available here [SigLIP2_SANA ](https://huggingface.co/BLIP3o/SigLIP2_SANA). 
 
 First, download the model checkpoint:
 
