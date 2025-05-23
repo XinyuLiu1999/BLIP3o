@@ -6,6 +6,8 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 
 ## Update
 
+- [2025/05/22] 🔥 How to use BLIP3o/BLIP3o-Model-4B? Just modify the [latent embedding size](https://github.com/JiuhaiChen/BLIP3o/blob/main/blip3o/model/nextdit_crossattn.py#L25) from 3584 (8B) to 2048(4B).
+
 - [2025/05/20] 🔥 We create discussion groups by the end of page, feel free to join us! 
 
 - [2025/05/19] 🔥 We understand this is a large codebase, we shared a high-level overview of its [Code Structure](https://github.com/JiuhaiChen/BLIP3o/issues/11#issuecomment-2891930000), feel free to open an issue if you encounter any problems.
