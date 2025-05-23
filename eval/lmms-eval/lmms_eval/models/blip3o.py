@@ -21,7 +21,7 @@ from lmms_eval.api.instance import Instance
 from lmms_eval.api.model import lmms
 from lmms_eval.api.registry import register_model
 from lmms_eval.models.model_utils.load_video import read_video_pyav_base64
-from blip3o.model.builder import load_pretrained_model
+from blip3o.model.builder import load_pretrained_model_lmms_eval
 
 try:
     from qwen_vl_utils import process_vision_info
@@ -73,9 +73,9 @@ class blip3o(lmms):
             self.device_map = device_map if device_map else device
 
         if use_flash_attention_2:
-            _, self._model, _ = load_pretrained_model(pretrained, device_map=self.device_map, use_flash_attn=True)
+            _, self._model, _ = load_pretrained_model_lmms_eval(pretrained, device_map=self.device_map, use_flash_attn=True)
         else:
-            _, self._model, _ = load_pretrained_model(pretrained, device_map=self.device_map, use_flash_attn=False)
+            _, self._model, _ = load_pretrained_model_lmms_eval(pretrained, device_map=self.device_map, use_flash_attn=False)
 
         self.max_pixels = max_pixels
         self.min_pixels = min_pixels
