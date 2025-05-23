@@ -1,20 +1,18 @@
 #!/bin/bash
 
 
-# conda  activate  blip3o
+conda  activate  blip3o
 
 
-# export HF_HOME=/fsx/sfr/data/jiuhai
+export HF_HOME=/your/HF/home/path
 
 
-
-
-MODEL="/fsx/sfr/data/jiuhai/hub/models--BLIP3o--BLIP3o-Model/snapshots/3d48160921990db9e65c0dfab6915fe08e6c1565"
+MODEL="/your/mode/path/"
 
 
 
 # Total number of GPUs/chunks.
-N_CHUNKS=1
+N_CHUNKS=8
 
 # Launch processes in parallel for each GPU/chunk.
 for i in $(seq 0 $(($N_CHUNKS - 1))); do
