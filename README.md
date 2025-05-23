@@ -71,7 +71,7 @@ BLIP3o-8B [8B](https://huggingface.co/BLIP3o/BLIP3o-Model)
 
 ## Inference
 
-You can  download our chekpoint
+You can  download our checkpoint:
 
 ```Shell
 python -c "from huggingface_hub import snapshot_download; print(snapshot_download(repo_id='BLIP3o/BLIP3o-Model', repo_type='model'))"
@@ -95,9 +95,21 @@ We also provide two CLIP + Diffusion:
 
 [EVA-CLIP + SDXL]: The model checkpoint already includes the diffusion decoder [diffusion-decoder](https://huggingface.co/BLIP3o/BLIP3o-Model/tree/main/diffusion-decoder). The EVA-CLIP vision tower weights can be downloaded here [EVA-CLIP](https://huggingface.co/jiuhai/eva_clip_vision_tower), the preprocess of EVA-CLIP is in the training code [EVA-CLIP-preprocess](https://github.com/JiuhaiChen/BLIP3o/tree/main/blip3o/model/multimodal_encoder/eva_clip).
 
-[SigLIP + SANA]: [coming soon]
+[SigLIP2 + SANA]: The model checkpoint is available here [SigLIP2_SANA ](https://huggingface.co/BLIP3o/SigLIP2_SANA). 
 
+First, download the model checkpoint:
 
+```Shell
+python -c "from huggingface_hub import snapshot_download; print(snapshot_download(repo_id='BLIP3o/SigLIP2_SANA', repo_type='model'))"
+```
+and update [img_path = 'fig.jpg'](https://github.com/JiuhaiChen/BLIP3o/blob/2e6775baaa6703fd8be835b658fb20c31e3ca365/siglip2_sana/inference.py#L53) to any local image you like. Run the inference code
+
+```Shell
+cd siglip2_sana
+python inference.py  /HF_model/SigLIP2_SANA/path/
+```
+
+And you will get reconstruction.png.
 
 ## Supported Tasks
 
