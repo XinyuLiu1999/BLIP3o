@@ -159,8 +159,11 @@ train_dataset = load_dataset("webdataset", data_files=data_files, split="train",
 ```
 ### Super High Quality T2I Instruction Tuning Data Prompted From GPT-4o   
 #### 👉 [BLIP3o-60k](https://huggingface.co/datasets/BLIP3o/BLIP3o-60k)
-
-💥 **In general, BLIP3o-60k can help pretrained T2I models achieve a 5–7 point absolute score improvement on the GenEval and DPG benchmarks.**
+You can download the datasets by
+```Shell
+python -c "from huggingface_hub import snapshot_download; print(snapshot_download(repo_id='BLIP3o/BLIP3o-60k', repo_type='dataset'))"
+```
+### 💥 In general, BLIP3o-60k can help pretrained T2I models achieve a 5–7 point absolute score improvement on the GenEval and DPG benchmarks.**
 
 ## Qualitative results of BLIP3-o
 ![BLIP3-o Overview Figure](figure/image.png)
