@@ -26,7 +26,7 @@ dependencies = [
     "isort==5.13.2",
     "datasets==2.16.1",
     "evaluate>=0.4.0",
-    "httpx==0.23.3",
+    "httpx==0.24.0",
     "jsonlines",
     "numexpr",
     "numpy==1.26.4",
@@ -96,7 +96,7 @@ gemini = [
     "google-generativeai",
 ]
 reka = [
-    "httpx==0.23.3",
+    "httpx==0.24.0",
     "reka-api",
 ]
 qwen = [
