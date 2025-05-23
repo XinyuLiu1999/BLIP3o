@@ -150,7 +150,7 @@ train_dataset = load_dataset("webdataset", data_files=data_files, split="train",
 
 💥 **In general, BLIP3o-60k can help pretrained T2I models achieve a 5–7 point absolute score improvement on the GenEval and DPG benchmarks.**
 
-
+## Qualitative results of BLIP3-o
 ![BLIP3-o Overview Figure](figure/image.png)
 *Figure: Qualitative results of BLIP3-o.*
 
