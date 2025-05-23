@@ -14,7 +14,7 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 Discord: https://discord.gg/SsVYdV84bw
 or Wechat
 <p align="center">
-<img src="figure/wechat_1.jpg" width="256">
+<img src="figure/wechat_2.jpg" width="256">
 </p>
 
 - [2025/05/19] 🔥 We understand this is a large codebase, we shared a high-level overview of its [Code Structure](https://github.com/JiuhaiChen/BLIP3o/issues/11#issuecomment-2891930000), feel free to open an issue if you encounter any problems.
