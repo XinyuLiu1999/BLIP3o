@@ -135,7 +135,7 @@ We suggest to use Qwen-2.5-VL as the backbone, we are fixing some tokenizer issu
 Most of our training data use Huggingface datasets to load **WebDataset**. To download the datasets:
 
 ### T2I Pretraining Dataset  
-**👉 [Pretrain](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Long-Caption)
+#### 👉 [Pretrain](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Long-Caption)
 
 You can download the datasets by
 ```Shell
@@ -146,7 +146,7 @@ And load them directly with HuggingFace WebDataset
 train_dataset = load_dataset("webdataset", data_files=data_files, split="train", num_proc=128)
 ```
 ### Super High Quality T2I Instruction Tuning Data Prompted From GPT-4o   
-**👉 [BLIP3o-60k](https://huggingface.co/datasets/BLIP3o/BLIP3o-60k)
+#### 👉 [BLIP3o-60k](https://huggingface.co/datasets/BLIP3o/BLIP3o-60k)
 
 💥 **In general, BLIP3o-60k can help pretrained T2I models achieve a 5–7 point absolute score improvement on the GenEval and DPG benchmarks.**
 
