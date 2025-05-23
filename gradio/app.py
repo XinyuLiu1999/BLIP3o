@@ -82,9 +82,8 @@ def process_image(prompt: str, img: Image.Image) -> str:
 # Initialize model + pipeline
 disable_torch_init()
 model_path = os.path.expanduser(sys.argv[1])
-tokenizer, multi_model, _ = load_pretrained_model(
-    model_path, None, get_model_name_from_path(model_path)
-)
+tokenizer, multi_model, _ = load_pretrained_model(model_path)
+
 pipe = DiffusionPipeline.from_pretrained(
     diffusion_path,
     custom_pipeline="pipeline_llava_gen",
