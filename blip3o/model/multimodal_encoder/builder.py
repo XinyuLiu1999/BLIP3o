@@ -51,13 +51,9 @@ def build_gen_vision_tower(vision_tower_cfg, **kwargs):
 
 
 def build_dit(vision_tower_cfg, **kwargs):
-    vae = AutoencoderKL.from_pretrained("black-forest-labs/FLUX.1-dev", subfolder="vae")
-    # vae = AutoencoderKL.from_pretrained("stabilityai/sdxl-vae")
     dit = NextDiTCrossAttn(NextDiTCrossAttnConfig())
     noise_scheduler = FlowMatchEulerDiscreteScheduler.from_pretrained("Alpha-VLLM/Lumina-Next-SFT-diffusers", subfolder="scheduler")
     # scheduler = FlowMatchEulerDiscreteScheduler.from_pretrained("Alpha-VLLM/Lumina-Next-SFT-diffusers", subfolder="scheduler")
-    vae.eval()
-    vae.requires_grad_(False)
-    return dit, vae, noise_scheduler
+    return dit, noise_scheduler
 
 
