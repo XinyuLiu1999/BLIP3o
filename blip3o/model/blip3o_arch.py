@@ -38,7 +38,7 @@ class blip3oMetaModel:
                     torch.empty(config.hidden_size, dtype=self.dtype)
                 )
 
-            self.dit, self.vae, self.noise_scheduler = build_dit(config)
+            self.dit, self.noise_scheduler = build_dit(config)
 
 
     # def get_vision_tower(self):
@@ -73,7 +73,7 @@ class blip3oMetaModel:
 
         if getattr(self, 'dit', None) is None:
             print("random initiation the DiT !!!")
-            self.dit, self.vae, self.noise_scheduler = build_dit(model_args)
+            self.dit, self.noise_scheduler = build_dit(model_args)
         else:
             print("DiT load from checkpoint!!!")
             for p in self.dit.parameters():
