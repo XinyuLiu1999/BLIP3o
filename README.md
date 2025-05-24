@@ -169,7 +169,7 @@ python -c "from huggingface_hub import snapshot_download; print(snapshot_downloa
 *Figure: Qualitative results of BLIP3-o.*
 
 
-## Benchmark Performance
+## Image Benchmark Performance
 
 | Model               | Pretrain Data                                             | GenEval | DBP    | WISE |
 |---------------------|-----------------------------------------------------------|---------|--------|------|
