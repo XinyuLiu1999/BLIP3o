@@ -169,6 +169,16 @@ python -c "from huggingface_hub import snapshot_download; print(snapshot_downloa
 *Figure: Qualitative results of BLIP3-o.*
 
 
+## Benchmark Performance
+
+| Model               | Pretrain Data                                             | GenEval | DBP    | WISE |
+|---------------------|-----------------------------------------------------------|---------|--------|------|
+| 4B (open source)    | 30 million open-source data                           | 0.81    | 79.36  | 0.50 |
+| 8B (open source)    | 30 million open-source data                           | 0.83    | 80.73  | 0.52 |
+| 8B (paper reported) | 30 million open-source + 30 million proprietary data  | 0.84    | 81.60  | 0.62 |
+
+
+
 
 ### Join Discussion
 Welcome to discuss with us if you have any questions.
@@ -177,6 +187,9 @@ or Wechat
 <p align="center">
 <img src="figure/wechat_1.jpg" width="256">
 </p>
+
+
+
 
 
 ### Citation
