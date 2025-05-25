@@ -8,7 +8,7 @@ export OUTPUT_FOLDER=/Your/Model/Output/
 export IMG_FOLDER=/Your/Image/Folder
 
 ## import journeyDB folder if you want to use journeyDB, and then you need to add a training argument below   --journeyDB_folder  ${journeyDB_folder}  \
-export journeyDB_folder=/Your/journeyDB/Folder  
+export journeyDB_folder=/Your/JourneyDB/Folder  
 
 torchrun --nproc_per_node=8 \
     blip3o/train/train_mem.py \
