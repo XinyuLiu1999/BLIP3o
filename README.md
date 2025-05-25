@@ -35,7 +35,7 @@ or Wechat
 - [2025/05/19] 🔥 We understand this is a large codebase, we shared a high-level overview of its [Code Structure](https://github.com/JiuhaiChen/BLIP3o/issues/11#issuecomment-2891930000), feel free to open an issue if you encounter any problems.
 
 
-- [2025/05/16] 🔥 We’ve published a dataset of 20 million images with detailed captions [BLIP3o Pretrain Long Caption](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Long-Caption) and 4 million images with short caption [BLIP3o Pretrain Short Caption](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Short-Caption). All images and their captions are compressed into tar archives, **no separate image url downloads or manual unzipping required**. 
+- [2025/05/16] 🔥 We’ve published a dataset of 24 million images with detailed captions [BLIP3o Pretrain Long Caption](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Long-Caption) and 5 million images with short caption [BLIP3o Pretrain Short Caption](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Short-Caption). All images and their captions are compressed into tar archives, **no separate image url downloads or manual unzipping required**. 
 
 
 
