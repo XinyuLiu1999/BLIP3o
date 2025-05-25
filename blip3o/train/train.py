@@ -77,6 +77,7 @@ class DataArguments:
     lazy_preprocess: bool = False
     is_multimodal: bool = False
     image_folder: Optional[str] = field(default=None)
+    journeyDB_folder: Optional[str] = field(default=None)
     shortcaption_image_folder: Optional[str] = field(default=None)
     data_type: Optional[str] = field(default="mix")
     image_aspect_ratio: str = "square"
@@ -570,13 +571,15 @@ class LazySupervisedMixDataset(Dataset):
 
         # load journeyDB_T2I data
         # train_dataset = load_dataset("json", data_files='/fsx/sfr/data/jiuhai/hub/datasets--JourneyDB--JourneyDB/snapshots/e191aa61ca37e5e4418707ade4df5deb5c6d5d8f/data/train/train_caption_only.jsonl', split="train", num_proc=64)
-        # train_dataset = train_dataset.add_column('type', len(train_dataset) * ['journeyDB_T2I'])
-        # train_dataset = train_dataset.add_column('image', len(train_dataset) * [None])
-        # train_dataset = train_dataset.rename_column("caption", "txt")
-        # train_dataset = train_dataset.rename_column("img_path", "image_path")
-        # train_dataset = train_dataset.remove_columns([col for col in train_dataset.column_names if not col in (
-        #     ["txt", "image", "type", "image_path"])])
-        # print(f"finish loading journeyDB {len(train_dataset)}")
+        if args.journeyDB_folder is not None:
+            train_dataset = load_dataset("json", data_files=os.path.join(args.journeyDB_folder, "data/train/train_caption_only.jsonl"), split="train", num_proc=64)
+            train_dataset = train_dataset.add_column('type', len(train_dataset) * ['journeyDB_T2I'])
+            train_dataset = train_dataset.add_column('image', len(train_dataset) * [None])
+            train_dataset = train_dataset.rename_column("caption", "txt")
+            train_dataset = train_dataset.rename_column("img_path", "image_path")
+            train_dataset = train_dataset.remove_columns([col for col in train_dataset.column_names if not col in (
+                ["txt", "image", "type", "image_path"])])
+            print(f"finish loading journeyDB {len(train_dataset)}")
         
 
 
@@ -691,7 +694,8 @@ class LazySupervisedMixDataset(Dataset):
                             img = img.convert("RGB")
                         elif sources["type"] == "journeyDB_T2I" or sources["type"] == "journeyDB_I2I":
                             if sources["type"] == "journeyDB_T2I" or sources["type"] == "journeyDB_I2I":
-                                image_path = os.path.join('/fsx/sfr/data/jiuhai/hub/datasets--JourneyDB--JourneyDB/snapshots/e191aa61ca37e5e4418707ade4df5deb5c6d5d8f/data/train/imgs', img)
+                                image_path = os.path.join(args.journeyDB_folder, "data", "train", "imgs", img)
+                                # image_path = os.path.join('/fsx/sfr/data/jiuhai/hub/datasets--JourneyDB--JourneyDB/snapshots/e191aa61ca37e5e4418707ade4df5deb5c6d5d8f/data/train/imgs', img)
                             else:
                                 raise ValueError("Unknown source type. Please check the 'type' in 'sources'.")
                             img = Image.open(image_path).convert("RGB")
