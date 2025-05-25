@@ -6,7 +6,7 @@ conda activate  blip3o
 export HF_HOME=/HF/Home/
 export OUTPUT_FOLDER=/Your/Model/Output/
 export IMG_FOLDER=/Your/Image/Folder
-
+export IMG_FOLDER=/Your/Image/Folder
 
 torchrun --nproc_per_node=8 \
     blip3o/train/train_mem.py \
