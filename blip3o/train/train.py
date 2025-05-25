@@ -928,17 +928,14 @@ def train(attn_implementation=None):
                 output.requires_grad_(True)
 
             model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
-    if "Qwen" in model_args.model_name_or_path or "qwen" in model_args.model_name_or_path:
+    
+    try:
         tokenizer = AutoProcessor.from_pretrained(model_args.model_name_or_path).tokenizer
-        tokenizer.model_max_length = training_args.model_max_length
-    else:
-        tokenizer = transformers.AutoTokenizer.from_pretrained(
-            model_args.model_name_or_path,
-            cache_dir=training_args.cache_dir,
-            model_max_length=training_args.model_max_length,
-            padding_side="right",
-            use_fast=False,
-        )
+    except Exception as e:
+        tokenizer = AutoProcessor.from_pretrained(model_args.model_name_or_path)
+        
+    tokenizer.model_max_length = training_args.model_max_length
+
     # tokenizer.pad_token = tokenizer.unk_token
     if tokenizer.pad_token is None:
         smart_tokenizer_and_embedding_resize(
