@@ -190,16 +190,6 @@ python -c "from huggingface_hub import snapshot_download; print(snapshot_downloa
 
 
 
-### Join Discussion
-Welcome to discuss with us if you have any questions.
-Discord: https://discord.gg/SsVYdV84bw
-or Wechat
-<p align="center">
-<img src="figure/wechat_1.jpg" width="256">
-</p>
-
-
-
 
 
 ### Citation
