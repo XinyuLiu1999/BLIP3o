@@ -4,6 +4,15 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 
 ## 📖 [Arxiv](http://arxiv.org/abs/2505.09568)
 
+
+## ✨ Highlights
+
+- **Fully Open-Source:** [30 Million Pretraining Data](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Long-Caption), [60k GPT-4o Distilled Instruction Tuning Data](https://huggingface.co/datasets/BLIP3o/BLIP3o-60k), Model Weights [4B](https://huggingface.co/BLIP3o/BLIP3o-Model-4B), [8B](https://huggingface.co/BLIP3o/BLIP3o-Model-8B), Training Code.
+- **Unified Architecture:** for both image understanding and generation.
+- **CLIP Feature Diffusion:** Directly diffuses semantic vision features for stronger alignment and performance.
+- **State-of-the-art performance:** across a wide range of image understanding and generation benchmarks.
+
+
 ## Update
 
 
@@ -29,12 +38,6 @@ or Wechat
 
 
 
-## ✨ Highlights
-
-- **Fully Open-Source:** Fully open-source training data (Pretraining and Instruction Tuning), training recipe, model weights, code.
-- **Unified Architecture:** for both image understanding and generation.
-- **CLIP Feature Diffusion:** Directly diffuses semantic vision features for stronger alignment and performance.
-- **State-of-the-art performance:** across a wide range of image understanding and generation benchmarks.
 
 
 <!-- <p align="center">
