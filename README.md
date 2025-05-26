@@ -76,14 +76,14 @@ pip install -r requirements.txt
 
 ### BLIP3o-4B [4B](https://huggingface.co/BLIP3o/BLIP3o-Model-4B)
 
-### BLIP3o-8B [8B](https://huggingface.co/BLIP3o/BLIP3o-Model)
+### BLIP3o-8B [8B](https://huggingface.co/BLIP3o/BLIP3o-Model-8B)
 
 ## Inference
 
 You can  download our checkpoint:
 
 ```Shell
-python -c "from huggingface_hub import snapshot_download; print(snapshot_download(repo_id='BLIP3o/BLIP3o-Model', repo_type='model'))"
+python -c "from huggingface_hub import snapshot_download; print(snapshot_download(repo_id='BLIP3o/BLIP3o-Model-8B', repo_type='model'))"
 ```
 
 and run the inference code
@@ -96,7 +96,16 @@ We include two scripts: **slurm.sh** for multi-node training on Slurm clusters, 
 
 For both **slurm.sh** and **run.sh**, you need to import huggingface home **HF_HOME**, training data folder **IMG_FOLDER** and output model save folder **OUTPUT_FOLDER**. 
 
-For our open source model training, we combine the pretraining dataset, including both long and short captions, images from JourneyDB. You can download [JourneyDB](https://huggingface.co/datasets/JourneyDB/JourneyDB). When training the diffusion transformer from scratch, we recommend using a large number of training steps along with a cosine annealing learning rate schedule that decays from 1×10⁻⁴ down to 1×10⁻⁵.
+For our open source model training, we combine the pretraining dataset, including [long caption](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Long-Caption), [short caption](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Short-Caption) and [JourneyDB](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-JourneyDB). 
+
+You can download all the datasets, and use huggingface [webdataset](https://github.com/JiuhaiChen/BLIP3o/blob/main/blip3o/train/train.py#L587) to read them.
+
+```
+data_files = glob.glob(os.path.join('/long/caption/path', "*.tar")) + glob.glob(os.path.join('/short/caption/path', "*.tar")) + glob.glob(os.path.join('/JourneyDB/caption/path', "*.tar")) 
+train_dataset = load_dataset("webdataset", data_files=data_files, split="train", num_proc=128)
+```
+
+When training the diffusion transformer from scratch, we recommend using a large number of training steps along with a cosine annealing learning rate schedule that decays from 1×10⁻⁴ down to 1×10⁻⁵.
 
 
 ## CLIP + Diffusion (Encoder + Decoder)
