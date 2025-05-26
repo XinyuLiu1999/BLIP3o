@@ -98,7 +98,7 @@ For both **slurm.sh** and **run.sh**, you need to import huggingface home **HF_H
 
 For our open source model training, we combine the pretraining dataset, including [long caption](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Long-Caption), [short caption](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Short-Caption) and [JourneyDB](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-JourneyDB). 
 
-You can download all the datasets, and use huggingface [webdataset](https://github.com/JiuhaiChen/BLIP3o/blob/main/blip3o/train/train.py#L587) to read them.
+You can download all datasets and then modify the [dataloader](https://github.com/JiuhaiChen/BLIP3o/blob/main/blip3o/train/train.py#L587) in the code to load whichever subset you need.
 
 ```
 data_files = glob.glob(os.path.join('/long/caption/path', "*.tar")) + glob.glob(os.path.join('/short/caption/path', "*.tar")) + glob.glob(os.path.join('/JourneyDB/caption/path', "*.tar")) 
