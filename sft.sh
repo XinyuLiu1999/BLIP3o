@@ -35,7 +35,7 @@ torchrun --nproc_per_node=8 \
     --learning_rate 1e-4 \
     --weight_decay 0. \
     --warmup_ratio 0.003 \
-    --lr_scheduler_type cosine" \
+    --lr_scheduler_type cosine \
     --model_max_length 512 \
     --logging_steps 1 \
     --tf32 True \
