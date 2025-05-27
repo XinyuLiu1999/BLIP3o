@@ -105,7 +105,9 @@ data_files = glob.glob(os.path.join('/long/caption/path', "*.tar")) + glob.glob(
 train_dataset = load_dataset("webdataset", data_files=data_files, split="train", num_proc=128)
 ```
 
-When training the diffusion transformer from scratch, we recommend using a large number of training steps along with a cosine annealing learning rate schedule that decays from 1×10⁻⁴ down to 1×10⁻⁵.
+When training the diffusion transformer from scratch, we recommend using a large number of training steps (at least **150k steps**) along with a cosine annealing learning rate schedule that decays from 1×10⁻⁴ down to 1×10⁻⁵.
+
+When finetuning with our BLIP3o-60k, we recommend using a large number of training steps (at least **10k steps**) along with a cosine annealing learning rate schedule that decays from 1×10⁻⁴ down to 0.
 
 
 ## CLIP + Diffusion (Encoder + Decoder)
