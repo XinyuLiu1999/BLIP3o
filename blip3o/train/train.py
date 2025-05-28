@@ -887,7 +887,8 @@ def train(attn_implementation=None):
                 ),
             )
         )
-
+        
+    ## if there exists vision tower for image understanind, we will load LLaMA LLM, otherwise will load Qwen-VL
     if model_args.vision_tower is not None:
         model = blip3oLlamaForCausalLM.from_pretrained(
             model_args.model_name_or_path,
@@ -897,22 +898,14 @@ def train(attn_implementation=None):
             **bnb_model_from_pretrained_args,
         )
     else:
-        if "Qwen" in model_args.model_name_or_path or "qwen" in model_args.model_name_or_path :
-            model = blip3oQwenForCausalLM.from_pretrained(
-                model_args.model_name_or_path,
-                cache_dir=training_args.cache_dir,
-                attn_implementation=attn_implementation,
-                torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
-                **bnb_model_from_pretrained_args,
-            )
-        else:
-            model = transformers.LlamaForCausalLM.from_pretrained(
-                model_args.model_name_or_path,
-                cache_dir=training_args.cache_dir,
-                attn_implementation=attn_implementation,
-                torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
-                **bnb_model_from_pretrained_args,
-            )
+        model = blip3oQwenForCausalLM.from_pretrained(
+            model_args.model_name_or_path,
+            cache_dir=training_args.cache_dir,
+            attn_implementation=attn_implementation,
+            torch_dtype=(torch.bfloat16 if training_args.bf16 else None),
+            **bnb_model_from_pretrained_args,
+        )
+
     model.config.use_cache = False
 
     if model_args.freeze_backbone:
