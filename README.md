@@ -22,6 +22,8 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 
 ## Update
 
+- [2025/05/29] 🔥 Check out new branch [Qwen3-Siglip2](https://github.com/JiuhaiChen/BLIP3o/tree/Qwen3-Siglip2), it supports SigLIP2 as the image understanding vision encoder and Qwen3 as the AR backbone, with flexible training strategies—either sequential training or joint training—for both image understanding and generation.
+
 
 - [2025/05/22] 🔥 Evaluation for image understanding and generation, please check folder [eval](https://github.com/JiuhaiChen/BLIP3o/tree/main/eval).
 
