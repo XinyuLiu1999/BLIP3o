@@ -9,7 +9,7 @@ BLIP3-o is a unified multimodal model that combines the reasoning and instructio
 
 
 - **Fully Open-Source:**
-  - **Pretraining Data:** [24 Million Detailed Captions](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Long-Caption), [5 Million Short Captions](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Short-Caption)
+  - **Pretraining Data:** [24 Million Detailed Captions](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Long-Caption), [5 Million Short Captions](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-Short-Caption), [4 Million JourneyDB](https://huggingface.co/datasets/BLIP3o/BLIP3o-Pretrain-JourneyDB)
   - **Instruction Tuning Data:** [60 k GPT-4o Distilled Instruction Tuning Data](https://huggingface.co/datasets/BLIP3o/BLIP3o-60k)
   - **Model Weights:** [4 B](https://huggingface.co/BLIP3o/BLIP3o-Model-4B), [8 B](https://huggingface.co/BLIP3o/BLIP3o-Model-8B)
   - **Training Code**
