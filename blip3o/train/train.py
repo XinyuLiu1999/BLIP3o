@@ -969,7 +969,7 @@ def train(attn_implementation=None):
     gen_vision_tower.requires_grad_(False)
 
     data_args.gen_image_processor = gen_vision_tower.image_processor
-    data_args.image_processor = AutoProcessor.from_pretrained(model_args.model_name_or_path).image_processor
+    data_args.image_processor = AutoProcessor.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct").image_processor
 
     data_args.is_multimodal = True
     data_args.n_query = model_args.n_query
