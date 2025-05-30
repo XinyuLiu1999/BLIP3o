@@ -125,7 +125,6 @@ class blip3oMetaModel:
 
 
         if getattr(self, 'down_projector', None) is None:
-            print("random initiation the down_projector !!!")
             self.down_projector = build_down_projector(self.config)
         else:
             # In case it is frozen by LoRA
