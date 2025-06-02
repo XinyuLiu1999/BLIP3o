@@ -120,3 +120,25 @@ grid_image.save(f"{prompt[:100]}.png")
 
 
 
+
+
+
+
+
+
+## if you train the image reconstruction, please use the following code to do the inference 
+
+## your image path
+# img = 1001615122.jpg
+
+# set_global_seed(seed=42)
+# gen_images = []
+# inputs = add_template(["<image>\nPlease reconstruct the given image."])
+# inputs.append(Image.open(f"{img}"))
+# gen_img = pipe(inputs, guidance_scale=3.0)
+# gen_images.append(gen_img.image)
+# grid_image = create_image_grid(gen_images, 1, 1)
+# grid_image.save(f"i2i.png")
+
+
+
