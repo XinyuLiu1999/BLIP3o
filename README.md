@@ -146,8 +146,7 @@ And you will get reconstruction.png.
 
 - **CLIP + MSE**  
 - **CLIP + Flow Matching** 
-- **VAE + Flow Matching** 
-- **Transfusion, LMFusion** 
+- **VAE + Flow Matching**  
 
 
 
