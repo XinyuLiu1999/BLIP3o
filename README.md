@@ -1,7 +1,12 @@
 
 # BLIP3o-NEXT 
 
-</tiny><a href="https://jiuhaichen.github.io/BLIP3o-NEXT.github.io/" style="font-weight: normal;">Project Page</a></tiny>
+<!-- </tiny><a href="https://jiuhaichen.github.io/BLIP3o-NEXT.github.io/" style="font-weight: normal;">Project Page</a></tiny> -->
+
+
+## 📖 [Arxiv](http://arxiv.org/abs/2510.15857)
+
+
 
 
 <p align="center">
