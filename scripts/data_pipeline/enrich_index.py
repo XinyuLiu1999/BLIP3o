@@ -56,44 +56,50 @@ def main():
     print(f"Loaded index: {table.num_rows} samples, columns: {table.column_names}")
 
     if args.scores:
-        # Load scores
+        # Load scores into a lookup dict
         if args.scores.endswith(".parquet"):
             scores_table = pq.read_table(args.scores)
+            score_keys = scores_table.column(args.key_col).to_pylist()
+            all_cols = scores_table.column_names
+            cols_to_join = args.value_cols or [c for c in all_cols if c != args.key_col]
+            lookup = {}
+            for i, key in enumerate(score_keys):
+                lookup[key] = {c: scores_table.column(c)[i].as_py() for c in cols_to_join}
         else:
-            # Read CSV with pyarrow
+            # Read CSV
             with open(args.scores, "r") as f:
                 reader = csv.DictReader(f)
                 rows = list(reader)
             if not rows:
                 print("[WARN] Scores file is empty, skipping.")
+                lookup = {}
+                cols_to_join = []
             else:
-                # Determine which columns to join
                 all_cols = list(rows[0].keys())
                 cols_to_join = args.value_cols or [c for c in all_cols if c != args.key_col]
-
-                # Build a lookup dict: key -> {col: value}
                 lookup = {}
                 for row in rows:
                     key = row[args.key_col]
                     lookup[key] = {c: row[c] for c in cols_to_join}
 
-                # Join onto the index
-                index_keys = table.column("sample_key").to_pylist()
-                for col in cols_to_join:
-                    values = []
-                    for k in index_keys:
-                        entry = lookup.get(k)
-                        if entry is not None:
-                            try:
-                                values.append(float(entry[col]))
-                            except (ValueError, TypeError):
-                                values.append(None)
-                        else:
+        # Join onto the index
+        if cols_to_join and lookup:
+            index_keys = table.column("sample_key").to_pylist()
+            for col in cols_to_join:
+                values = []
+                for k in index_keys:
+                    entry = lookup.get(k)
+                    if entry is not None:
+                        try:
+                            values.append(float(entry[col]))
+                        except (ValueError, TypeError):
                             values.append(None)
-                    table = table.append_column(col, pa.array(values, type=pa.float64()))
+                    else:
+                        values.append(None)
+                table = table.append_column(col, pa.array(values, type=pa.float64()))
 
-                matched = sum(1 for v in values if v is not None)
-                print(f"Joined {cols_to_join}: {matched}/{table.num_rows} samples matched")
+            matched = sum(1 for v in values if v is not None)
+            print(f"Joined {cols_to_join}: {matched}/{table.num_rows} samples matched")
 
     if args.subset_list and args.subset_col:
         with open(args.subset_list) as f:

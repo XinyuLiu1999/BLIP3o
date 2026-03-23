@@ -163,10 +163,11 @@ def test_priority_cross_process():
     """Priority computed in-process matches what index_tars.py produces."""
     tmpdir = tempfile.mkdtemp()
     try:
-        # Add project root to path for import
-        project_root = os.path.abspath(os.path.join(SCRIPTS_DIR, "..", "..", ".."))
-        sys.path.insert(0, project_root)
-        from scripts.data_pipeline.index_tars import compute_priority
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("index_tars", os.path.join(SCRIPTS_DIR, "index_tars.py"))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        compute_priority = mod.compute_priority
 
         keys = [f"{i:06d}" for i in range(10)]
         _make_tar(tmpdir, "data.tar", keys)
@@ -188,7 +189,12 @@ def test_priority_cross_process():
 
 
 def test_experiment_overlap():
-    """Two experiments with overlapping filters share overlapping membership."""
+    """Same filter with K1 < K2 in select mode: K1 result is a subset of K2 result.
+
+    Note: subset nesting is guaranteed when filter is identical because select
+    mode filters first, then takes top-K by priority.  With *different* filters
+    the filtered pools differ, so top-K selections are not necessarily nested.
+    """
     tmpdir = tempfile.mkdtemp()
     try:
         keys = [f"{i:06d}" for i in range(20)]
@@ -211,21 +217,21 @@ def test_experiment_overlap():
             "--output", enriched_path
         ])
 
-        # Experiment A: score > 0.3, K=10
+        # Experiment A: score > 0.3, K=5  (same filter, smaller K)
         exp_a = os.path.join(tmpdir, "exp_a")
         os.makedirs(exp_a)
         with open(os.path.join(exp_a, "config.yaml"), "w") as f:
-            yaml.dump({"name": "a", "filter_expression": "score > 0.3", "K": 10, "mode": "select"}, f)
+            yaml.dump({"name": "a", "filter_expression": "score > 0.3", "K": 5, "mode": "select"}, f)
         _run_script("materialize.py", [
             "--config", os.path.join(exp_a, "config.yaml"),
             "--index", enriched_path, "--output_dir", exp_a
         ])
 
-        # Experiment B: score > 0.5, K=10 (stricter filter, subset of A's pool)
+        # Experiment B: score > 0.3, K=10  (same filter, larger K)
         exp_b = os.path.join(tmpdir, "exp_b")
         os.makedirs(exp_b)
         with open(os.path.join(exp_b, "config.yaml"), "w") as f:
-            yaml.dump({"name": "b", "filter_expression": "score > 0.5", "K": 10, "mode": "select"}, f)
+            yaml.dump({"name": "b", "filter_expression": "score > 0.3", "K": 10, "mode": "select"}, f)
         _run_script("materialize.py", [
             "--config", os.path.join(exp_b, "config.yaml"),
             "--index", enriched_path, "--output_dir", exp_b
@@ -234,10 +240,11 @@ def test_experiment_overlap():
         mem_a = _read_membership(exp_a)
         mem_b = _read_membership(exp_b)
 
-        # B's samples (score > 0.5) should all be in A (score > 0.3)
-        assert mem_b.issubset(mem_a), \
-            f"Stricter filter not subset of looser filter!\n  Only in B: {mem_b - mem_a}"
-        print(f"[PASS] test_experiment_overlap (A={len(mem_a)}, B={len(mem_b)}, B⊂A={mem_b.issubset(mem_a)})")
+        # With same filter, K=5 must be a strict subset of K=10
+        assert mem_a.issubset(mem_b), \
+            f"Smaller K not subset of larger K with same filter!\n  Only in A: {mem_a - mem_b}"
+        assert len(mem_a) < len(mem_b), "K=5 and K=10 should produce different sizes"
+        print(f"[PASS] test_experiment_overlap (A={len(mem_a)}, B={len(mem_b)}, A⊂B={mem_a.issubset(mem_b)})")
     finally:
         shutil.rmtree(tmpdir)
 

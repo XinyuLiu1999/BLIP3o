@@ -224,7 +224,11 @@ def test_tar_list_input():
 
 def test_priority_determinism():
     """Same key must always produce the same priority, across separate runs."""
-    from scripts.data_pipeline.index_tars import compute_priority
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("index_tars", os.path.join(SCRIPTS_DIR, "index_tars.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    compute_priority = mod.compute_priority
 
     key = "shard-042/test_sample_12345"
     p1 = compute_priority(key)
@@ -259,10 +263,6 @@ def test_priority_sorted():
 
 
 if __name__ == "__main__":
-    # Add project root to sys.path for import
-    project_root = os.path.abspath(os.path.join(SCRIPTS_DIR, "..", "..", ".."))
-    sys.path.insert(0, project_root)
-
     tests = [
         test_multiple_tars,
         test_nested_keys,
