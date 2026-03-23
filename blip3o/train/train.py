@@ -50,6 +50,9 @@ class DataArguments:
     image_folder: Optional[str] = field(default=None)
     image_aspect_ratio: str = "square"
     dataset_cls: str = field(default="blip3o")
+    experiment_dir: Optional[str] = field(default=None, metadata={"help": "Path to materialized experiment directory containing membership.txt and shardlist.txt"})
+    data_cache_dir: Optional[str] = field(default=None, metadata={"help": "HuggingFace datasets cache directory for webdataset loading"})
+    num_loading_workers: int = field(default=32, metadata={"help": "Number of parallel workers for dataset loading and filtering"})
 
 
 @dataclass

@@ -171,16 +171,61 @@ class LazySupervisedMixDataset(Dataset):
         self.data_args = data_args
         list_data_dict = []
 
+        experiment_dir = getattr(data_args, 'experiment_dir', None)
+        if experiment_dir is not None:
+            # ---- Experiment mode: load from materialized experiment ----
+            shardlist_path = os.path.join(experiment_dir, "shardlist.txt")
+            membership_path = os.path.join(experiment_dir, "membership.txt")
 
-        train_dataset = load_dataset("webdataset", data_files='/fsx/home/jiuhai.chen/soda/overfit.tar', split="train", num_proc=1, cache_dir='/fsx/sfr/data/jiuhai/webdataset')
-        train_dataset = train_dataset.rename_column("jpg", "image")
-        train_dataset = train_dataset.add_column('type', len(train_dataset) * ['T2I'])
-        train_dataset = train_dataset.remove_columns([col for col in train_dataset.column_names if not col in (
-            ["image", "txt", "type"])])
-        print(f"finish loading image {len(train_dataset)}")
-        list_data_dict.append(train_dataset)
+            with open(shardlist_path) as f:
+                shards = [l.strip() for l in f if l.strip()]
+            with open(membership_path) as f:
+                membership = set(l.strip() for l in f if l.strip())
 
+            rank0_print(f"Loading experiment from {experiment_dir}")
+            rank0_print(f"  shards: {len(shards)}, membership: {len(membership)}")
 
+            cache_dir = getattr(data_args, 'data_cache_dir', None)
+            num_proc = getattr(data_args, 'num_loading_workers', 32)
+
+            train_dataset = load_dataset(
+                "webdataset",
+                data_files=shards,
+                split="train",
+                num_proc=num_proc,
+                cache_dir=cache_dir,
+            )
+
+            # Filter by membership set
+            before_count = len(train_dataset)
+            train_dataset = train_dataset.filter(
+                lambda sample: sample["__key__"] in membership,
+                num_proc=num_proc,
+            )
+            rank0_print(f"  filtered: {before_count} -> {len(train_dataset)}")
+
+            # Align with existing pipeline: rename image column, add type
+            if "jpg" in train_dataset.column_names:
+                train_dataset = train_dataset.rename_column("jpg", "image")
+            elif "png" in train_dataset.column_names:
+                train_dataset = train_dataset.rename_column("png", "image")
+            train_dataset = train_dataset.add_column('type', ['T2I'] * len(train_dataset))
+            train_dataset = train_dataset.remove_columns(
+                [col for col in train_dataset.column_names
+                 if col not in ("image", "txt", "type")]
+            )
+            print(f"finish loading experiment: {len(train_dataset)} samples")
+            list_data_dict.append(train_dataset)
+
+        else:
+            # ---- Original path: hardcoded tar loading ----
+            train_dataset = load_dataset("webdataset", data_files='/fsx/home/jiuhai.chen/soda/overfit.tar', split="train", num_proc=1, cache_dir='/fsx/sfr/data/jiuhai/webdataset')
+            train_dataset = train_dataset.rename_column("jpg", "image")
+            train_dataset = train_dataset.add_column('type', len(train_dataset) * ['T2I'])
+            train_dataset = train_dataset.remove_columns([col for col in train_dataset.column_names if not col in (
+                ["image", "txt", "type"])])
+            print(f"finish loading image {len(train_dataset)}")
+            list_data_dict.append(train_dataset)
 
         if len(list_data_dict) > 1:
             list_data_dict = concatenate_datasets(list_data_dict)
@@ -188,8 +233,7 @@ class LazySupervisedMixDataset(Dataset):
             list_data_dict = list_data_dict[0]
         list_data_dict = list_data_dict.shuffle(seed=42)
 
-
-        rank0_print(f"Totoal number of training instance: {len(list_data_dict)}")
+        rank0_print(f"Total number of training instances: {len(list_data_dict)}")
         self.tokenizer = tokenizer
         self.list_data_dict = list_data_dict
         self.modality = torch.tensor(0) # 0 is for und task, 1 is for gen task
