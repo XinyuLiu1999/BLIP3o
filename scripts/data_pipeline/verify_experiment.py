@@ -165,12 +165,6 @@ def main():
         index_path = os.path.join(tmpdir, "index.parquet")
         run_script(
             os.path.join(scripts_dir, "index_tars.py"),
-            ["--tar_list", "/dev/stdin", "--output", index_path, "--num_workers", "1"],
-        )
-        # Workaround: use tar_dir instead since we have a single tar
-        # Re-run with --tar_dir pointing to tmpdir
-        run_script(
-            os.path.join(scripts_dir, "index_tars.py"),
             ["--tar_dir", tmpdir, "--output", index_path, "--num_workers", "1"],
         )
 
