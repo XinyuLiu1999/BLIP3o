@@ -9,7 +9,7 @@ Verifies:
   - Select mode with K=N1 is a strict subset of K=N2 where N1 < N2
 
 Usage:
-    python scripts/data_pipeline/test_determinism.py
+    python scripts/data_pipeline/tests/test_determinism.py
 """
 
 import hashlib
@@ -27,7 +27,7 @@ import yaml
 from PIL import Image
 
 
-SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPTS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def _make_image_bytes():
@@ -164,7 +164,7 @@ def test_priority_cross_process():
     tmpdir = tempfile.mkdtemp()
     try:
         # Add project root to path for import
-        project_root = os.path.abspath(os.path.join(SCRIPTS_DIR, "..", ".."))
+        project_root = os.path.abspath(os.path.join(SCRIPTS_DIR, "..", "..", ".."))
         sys.path.insert(0, project_root)
         from scripts.data_pipeline.index_tars import compute_priority
 

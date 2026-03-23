@@ -150,7 +150,7 @@ def main():
                         help="Keep temporary files for inspection.")
     args = parser.parse_args()
 
-    scripts_dir = os.path.dirname(os.path.abspath(__file__))
+    scripts_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     tmpdir = tempfile.mkdtemp(prefix="blip3o_verify_")
     print(f"Working in: {tmpdir}\n")
 

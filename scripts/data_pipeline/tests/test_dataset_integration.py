@@ -12,7 +12,7 @@ then loads the dataset via the same code path that training uses, and verifies:
 This test requires HuggingFace datasets to be installed.
 
 Usage:
-    python scripts/data_pipeline/test_dataset_integration.py
+    python scripts/data_pipeline/tests/test_dataset_integration.py
 """
 
 import io
@@ -28,7 +28,7 @@ import yaml
 from PIL import Image
 
 
-SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPTS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def _make_image_bytes():

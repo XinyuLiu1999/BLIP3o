@@ -10,7 +10,7 @@ Tests for index_tars.py covering:
   - Priority determinism and uniqueness
 
 Usage:
-    python scripts/data_pipeline/test_index_tars.py
+    python scripts/data_pipeline/tests/test_index_tars.py
 """
 
 import hashlib
@@ -26,7 +26,7 @@ import pyarrow.parquet as pq
 from PIL import Image
 
 
-SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPTS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX_SCRIPT = os.path.join(SCRIPTS_DIR, "index_tars.py")
 
 
@@ -260,7 +260,7 @@ def test_priority_sorted():
 
 if __name__ == "__main__":
     # Add project root to sys.path for import
-    project_root = os.path.abspath(os.path.join(SCRIPTS_DIR, "..", ".."))
+    project_root = os.path.abspath(os.path.join(SCRIPTS_DIR, "..", "..", ".."))
     sys.path.insert(0, project_root)
 
     tests = [

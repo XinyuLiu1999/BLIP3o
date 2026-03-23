@@ -12,7 +12,7 @@ Tests for materialize.py covering:
   - Shardlist deduplication
 
 Usage:
-    python scripts/data_pipeline/test_materialize.py
+    python scripts/data_pipeline/tests/test_materialize.py
 """
 
 import hashlib
@@ -27,7 +27,7 @@ import pyarrow.parquet as pq
 import yaml
 
 
-SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPTS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MATERIALIZE_SCRIPT = os.path.join(SCRIPTS_DIR, "materialize.py")
 
 

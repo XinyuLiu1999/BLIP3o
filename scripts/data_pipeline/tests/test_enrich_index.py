@@ -9,7 +9,7 @@ Tests for enrich_index.py covering:
   - Successive enrichments (add column, then add another)
 
 Usage:
-    python scripts/data_pipeline/test_enrich_index.py
+    python scripts/data_pipeline/tests/test_enrich_index.py
 """
 
 import os
@@ -22,7 +22,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 
-SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPTS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENRICH_SCRIPT = os.path.join(SCRIPTS_DIR, "enrich_index.py")
 
 
