@@ -171,6 +171,8 @@ class LazySupervisedMixDataset(Dataset):
         self.data_args = data_args
         list_data_dict = []
 
+        self.caption_key = getattr(data_args, 'caption_key', 'txt')
+
         experiment_dir = getattr(data_args, 'experiment_dir', None)
         if experiment_dir is not None:
             # ---- Experiment mode: load from materialized experiment ----
@@ -209,6 +211,19 @@ class LazySupervisedMixDataset(Dataset):
                 train_dataset = train_dataset.rename_column("jpg", "image")
             elif "png" in train_dataset.column_names:
                 train_dataset = train_dataset.rename_column("png", "image")
+
+            # Extract caption from JSON if caption_key is not 'txt'
+            if self.caption_key != "txt" and "json" in train_dataset.column_names:
+                caption_key = self.caption_key
+                def _extract_caption(sample):
+                    meta = sample["json"]
+                    if isinstance(meta, str):
+                        meta = json.loads(meta)
+                    sample["txt"] = meta.get(caption_key, "")
+                    return sample
+                train_dataset = train_dataset.map(_extract_caption, num_proc=num_proc)
+                rank0_print(f"  extracted caption from json['{caption_key}'] -> txt")
+
             train_dataset = train_dataset.add_column('type', ['T2I'] * len(train_dataset))
             train_dataset = train_dataset.remove_columns(
                 [col for col in train_dataset.column_names
@@ -221,6 +236,18 @@ class LazySupervisedMixDataset(Dataset):
             # ---- Original path: hardcoded tar loading ----
             train_dataset = load_dataset("webdataset", data_files='/fsx/home/jiuhai.chen/soda/overfit.tar', split="train", num_proc=1, cache_dir='/fsx/sfr/data/jiuhai/webdataset')
             train_dataset = train_dataset.rename_column("jpg", "image")
+
+            # Extract caption from JSON if caption_key is not 'txt'
+            if self.caption_key != "txt" and "json" in train_dataset.column_names:
+                caption_key = self.caption_key
+                def _extract_caption(sample):
+                    meta = sample["json"]
+                    if isinstance(meta, str):
+                        meta = json.loads(meta)
+                    sample["txt"] = meta.get(caption_key, "")
+                    return sample
+                train_dataset = train_dataset.map(_extract_caption, num_proc=1)
+
             train_dataset = train_dataset.add_column('type', len(train_dataset) * ['T2I'])
             train_dataset = train_dataset.remove_columns([col for col in train_dataset.column_names if not col in (
                 ["image", "txt", "type"])])

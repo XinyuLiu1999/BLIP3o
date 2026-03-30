@@ -31,7 +31,7 @@ srun torchrun --nproc_per_node=8  --nnodes=$SLURM_NNODES \
     --num_scale_tokens 3 \
     --load_embeddings_from_vision True \
     --model_name_or_path $AR_BACKBONE \
-    --diffusion_name_or_path  DIFFUSION \
+    --diffusion_name_or_path  $DIFFUSION \
     --version "qwen_1_5" \
     --dataset_cls 'mix' \
     --dispatch_batches False \
