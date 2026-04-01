@@ -241,9 +241,11 @@ class LazySupervisedMixDataset(Dataset):
                 arrow_files = sorted(glob.glob(os.path.join(data_arrow_dir, "*.arrow")))
                 assert len(arrow_files) > 0, f"No arrow files found in {data_arrow_dir}"
                 rank0_print(f"Loading {len(arrow_files)} arrow files from {data_arrow_dir}")
-                from concurrent.futures import ThreadPoolExecutor
-                with ThreadPoolExecutor(max_workers=32) as pool:
-                    datasets = list(pool.map(HFDataset.from_file, arrow_files))
+                datasets = []
+                for idx, f in enumerate(arrow_files):
+                    datasets.append(HFDataset.from_file(f))
+                    if (idx + 1) % 500 == 0:
+                        rank0_print(f"  memory-mapped {idx + 1}/{len(arrow_files)} arrow files")
                 rank0_print(f"Memory-mapped {len(arrow_files)} arrow files, concatenating...")
                 train_dataset = concatenate_datasets(datasets)
                 rank0_print(f"Loaded arrow dataset: {len(train_dataset)} samples")
