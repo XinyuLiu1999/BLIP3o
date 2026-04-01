@@ -172,6 +172,7 @@ class LazySupervisedMixDataset(Dataset):
         self.data_args = data_args
         list_data_dict = []
         self.caption_key = getattr(data_args, 'caption_key', 'txt')
+        rank0_print(f"caption_key: {self.caption_key}")
 
         experiment_dir = getattr(data_args, 'experiment_dir', None)
         if experiment_dir is not None:
