@@ -156,43 +156,6 @@ def preprocess_qwen(sources, tokenizer: transformers.PreTrainedTokenizer, has_im
     )
 
 
-def _is_distributed_ready() -> bool:
-    return torch.distributed.is_available() and torch.distributed.is_initialized()
-
-
-def _dist_rank() -> int:
-    if _is_distributed_ready():
-        return torch.distributed.get_rank()
-    return 0
-
-
-def _dist_barrier() -> None:
-    if _is_distributed_ready():
-        torch.distributed.barrier()
-
-
-def _load_webdataset(data_files, split: str, num_proc: int, cache_dir: Optional[str]):
-    load_kwargs = dict(
-        path="webdataset",
-        data_files=data_files,
-        split=split,
-        num_proc=num_proc,
-        cache_dir=cache_dir,
-    )
-
-    if cache_dir is not None and _is_distributed_ready():
-        dataset = None
-        if _dist_rank() == 0:
-            rank0_print("Preparing shared webdataset cache on rank 0")
-            dataset = load_dataset(**load_kwargs)
-            rank0_print(f"Shared webdataset cache is ready: {len(dataset)} samples")
-        _dist_barrier()
-        if dataset is None:
-            dataset = load_dataset(**load_kwargs)
-        return dataset
-
-    return load_dataset(**load_kwargs)
-
 
 
 class LazySupervisedMixDataset(Dataset):
@@ -231,8 +194,8 @@ class LazySupervisedMixDataset(Dataset):
             num_proc = getattr(data_args, 'num_loading_workers', 32)
             load_num_proc = 1 if cache_dir is not None else num_proc
 
-            rank0_print("Loading experiment shards from webdataset cache")
-            train_dataset = _load_webdataset(
+            train_dataset = load_dataset(
+                "webdataset",
                 data_files=shards,
                 split="train",
                 num_proc=load_num_proc,
@@ -266,38 +229,51 @@ class LazySupervisedMixDataset(Dataset):
             list_data_dict.append(train_dataset)
 
         else:
-            # ---- Load all tars from data_dir ----
+            data_arrow_dir = getattr(data_args, 'data_arrow_dir', None)
             data_dir = getattr(data_args, 'data_dir', None)
             cache_dir = getattr(data_args, 'data_cache_dir', None)
             num_proc = getattr(data_args, 'num_loading_workers', 32)
 
-            if data_dir is not None:
+            if data_arrow_dir is not None:
+                # ---- Fast path: load pre-built arrow files directly ----
+                arrow_files = sorted(glob.glob(os.path.join(data_arrow_dir, "*.arrow")))
+                assert len(arrow_files) > 0, f"No arrow files found in {data_arrow_dir}"
+                rank0_print(f"Loading {len(arrow_files)} arrow files from {data_arrow_dir}")
+                train_dataset = load_dataset(
+                    "arrow",
+                    data_files=arrow_files,
+                    split="train",
+                )
+            elif data_dir is not None:
+                # ---- Load from tar files ----
                 shards = sorted(glob.glob(os.path.join(data_dir, "*.tar")))
                 assert len(shards) > 0, f"No tar files found in {data_dir}"
                 rank0_print(f"Loading all tars from {data_dir}: {len(shards)} shards")
+                train_dataset = load_dataset(
+                    "webdataset",
+                    data_files=shards,
+                    split="train",
+                    num_proc=num_proc,
+                    cache_dir=cache_dir,
+                )
             else:
                 shards = '/fsx/home/jiuhai.chen/soda/overfit.tar'
                 rank0_print("Warning: using hardcoded overfit.tar fallback")
+                train_dataset = load_dataset(
+                    "webdataset",
+                    data_files=shards,
+                    split="train",
+                    num_proc=num_proc,
+                    cache_dir=cache_dir,
+                )
 
-            # Use num_proc=1 when cache exists to avoid multiprocess lock
-            # contention on network filesystems during cache validation
-            load_num_proc = 1 if cache_dir is not None else num_proc
-            rank0_print("Loading raw webdataset shards")
-            train_dataset = _load_webdataset(
-                data_files=shards,
-                split="train",
-                num_proc=load_num_proc,
-                cache_dir=cache_dir,
-            )
-            rank0_print(f"Loaded raw dataset: {len(train_dataset)} samples, columns={train_dataset.column_names}")
+            rank0_print(f"Loaded dataset: {len(train_dataset)} samples, columns={train_dataset.column_names}")
 
             if "jpg" in train_dataset.column_names:
                 train_dataset = train_dataset.rename_column("jpg", "image")
             elif "png" in train_dataset.column_names:
                 train_dataset = train_dataset.rename_column("png", "image")
 
-            # Keep the dataset immutable and infer the default source type lazily
-            # in __getitem__ instead of materializing a constant column over all rows.
             keep_cols = {"image", "txt", "json", "type", "id", "__key__", "__url__"}
             train_dataset = train_dataset.remove_columns([col for col in train_dataset.column_names if col not in keep_cols])
             rank0_print(f"finish loading: {len(train_dataset)} samples")

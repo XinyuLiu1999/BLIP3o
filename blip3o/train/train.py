@@ -55,6 +55,7 @@ class DataArguments:
     num_loading_workers: int = field(default=32, metadata={"help": "Number of parallel workers for dataset loading and filtering"})
     caption_key: str = field(default="txt", metadata={"help": "Caption field to use. Use 'txt' for the .txt file in the tar, or a JSON field name like 'medium_caption' to extract from the .json file"})
     data_dir: Optional[str] = field(default=None, metadata={"help": "Directory containing tar files. Loads all tars without filtering."})
+    data_arrow_dir: Optional[str] = field(default=None, metadata={"help": "Directory containing pre-built arrow files. Bypasses tar loading entirely."})
 
 
 @dataclass
