@@ -235,11 +235,14 @@ class LazySupervisedMixDataset(Dataset):
                 shards = '/fsx/home/jiuhai.chen/soda/overfit.tar'
                 rank0_print("Warning: using hardcoded overfit.tar fallback")
 
+            # Use num_proc=1 when cache exists to avoid multiprocess lock
+            # contention on network filesystems during cache validation
+            load_num_proc = 1 if cache_dir is not None else num_proc
             train_dataset = load_dataset(
                 "webdataset",
                 data_files=shards,
                 split="train",
-                num_proc=num_proc,
+                num_proc=load_num_proc,
                 cache_dir=cache_dir,
             )
 
