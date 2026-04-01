@@ -237,18 +237,17 @@ class LazySupervisedMixDataset(Dataset):
 
             if data_arrow_dir is not None:
                 # ---- Fast path: load pre-built arrow files directly ----
-                # Bypasses load_dataset() entirely to avoid network FS fingerprinting
                 arrow_files = sorted(glob.glob(os.path.join(data_arrow_dir, "*.arrow")))
                 assert len(arrow_files) > 0, f"No arrow files found in {data_arrow_dir}"
                 rank0_print(f"Loading {len(arrow_files)} arrow files from {data_arrow_dir}")
                 datasets = []
+                log_interval = max(1, len(arrow_files) // 20)
                 for idx, f in enumerate(arrow_files):
                     datasets.append(HFDataset.from_file(f))
-                    if (idx + 1) % 500 == 0:
+                    if (idx + 1) % log_interval == 0 or (idx + 1) == len(arrow_files):
                         rank0_print(f"  memory-mapped {idx + 1}/{len(arrow_files)} arrow files")
-                rank0_print(f"Memory-mapped {len(arrow_files)} arrow files, concatenating...")
+                rank0_print(f"Concatenating {len(datasets)} datasets...")
                 train_dataset = concatenate_datasets(datasets)
-                rank0_print(f"Loaded arrow dataset: {len(train_dataset)} samples")
             elif data_dir is not None:
                 # ---- Load from tar files ----
                 shards = sorted(glob.glob(os.path.join(data_dir, "*.tar")))
