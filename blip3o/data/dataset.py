@@ -16,7 +16,6 @@ from PIL import Image, ImageFile
 from torch.utils.data import Dataset
 from torchvision.transforms import v2
 from torchvision import transforms
-import pyarrow as pa
 from datasets import load_dataset, concatenate_datasets, Dataset as HFDataset
 from blip3o.constants import (
     DEFAULT_IM_END_TOKEN,
@@ -172,9 +171,6 @@ class LazySupervisedMixDataset(Dataset):
 
         self.data_args = data_args
         list_data_dict = []
-        self._lengths = None
-        self._modality_lengths = None
-
         self.caption_key = getattr(data_args, 'caption_key', 'txt')
 
         experiment_dir = getattr(data_args, 'experiment_dir', None)
@@ -288,7 +284,7 @@ class LazySupervisedMixDataset(Dataset):
         else:
             list_data_dict = list_data_dict[0]
 
-        rank0_print("Skipping dataset-level shuffle; trainer sampler already shuffles batches.")
+        list_data_dict = list_data_dict.shuffle(seed=42)
         rank0_print(f"Total number of training instances: {len(list_data_dict)}")
         self.tokenizer = tokenizer
         self.list_data_dict = list_data_dict
@@ -313,13 +309,16 @@ class LazySupervisedMixDataset(Dataset):
 
     @property
     def lengths(self):
-        self._ensure_length_metadata()
-        return self._lengths
+        # All samples are T2I with images; return constant length to avoid
+        # iterating 19M samples (conversations are built lazily in __getitem__)
+        n = len(self.list_data_dict)
+        return [128] * n
 
     @property
     def modality_lengths(self):
-        self._ensure_length_metadata()
-        return self._modality_lengths
+        # All samples are T2I with images; positive value indicates image modality
+        n = len(self.list_data_dict)
+        return [128] * n
 
     def _get_source_type(self, sample) -> str:
         return sample.get("type", "T2I")
@@ -341,40 +340,6 @@ class LazySupervisedMixDataset(Dataset):
         if txt is None:
             return ""
         return txt if isinstance(txt, str) else str(txt)
-
-    def _get_text_length(self, sample) -> int:
-        sample_type = self._get_source_type(sample)
-        if sample_type == "T2I":
-            caption = self._get_caption_text(sample)
-            return 9 + len(caption.split())
-        if sample_type == "I2I":
-            return 6
-        raise ValueError(f"Unknown source type {sample_type}")
-
-    def _ensure_length_metadata(self) -> None:
-        if self._lengths is not None and self._modality_lengths is not None:
-            return
-
-        total_samples = len(self.list_data_dict)
-        progress_interval = max(100000, total_samples // 10) if total_samples else 0
-        rank0_print(f"Computing length metadata for {total_samples} samples")
-
-        has_image = "image" in self.list_data_dict.column_names
-        metadata_dataset = self.list_data_dict.remove_columns(["image"]) if has_image else self.list_data_dict
-        lengths = []
-        modality_lengths = []
-        for idx, sample in enumerate(metadata_dataset):
-            text_len = self._get_text_length(sample)
-            img_tokens = 128 if has_image else 0
-            lengths.append(text_len + img_tokens)
-            modality_lengths.append(text_len if has_image else -text_len)
-
-            if progress_interval and (idx + 1) % progress_interval == 0:
-                rank0_print(f"  computed length metadata for {idx + 1}/{total_samples} samples")
-
-        self._lengths = lengths
-        self._modality_lengths = modality_lengths
-        rank0_print("Finished computing length metadata")
 
     def __getitem__(self, i) -> Dict[str, torch.Tensor]:
 
