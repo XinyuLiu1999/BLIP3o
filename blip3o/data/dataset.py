@@ -156,6 +156,44 @@ def preprocess_qwen(sources, tokenizer: transformers.PreTrainedTokenizer, has_im
     )
 
 
+def _is_distributed_ready() -> bool:
+    return torch.distributed.is_available() and torch.distributed.is_initialized()
+
+
+def _dist_rank() -> int:
+    if _is_distributed_ready():
+        return torch.distributed.get_rank()
+    return 0
+
+
+def _dist_barrier() -> None:
+    if _is_distributed_ready():
+        torch.distributed.barrier()
+
+
+def _load_webdataset(data_files, split: str, num_proc: int, cache_dir: Optional[str]):
+    load_kwargs = dict(
+        path="webdataset",
+        data_files=data_files,
+        split=split,
+        num_proc=num_proc,
+        cache_dir=cache_dir,
+    )
+
+    if cache_dir is not None and _is_distributed_ready():
+        dataset = None
+        if _dist_rank() == 0:
+            rank0_print("Preparing shared webdataset cache on rank 0")
+            dataset = load_dataset(**load_kwargs)
+            rank0_print(f"Shared webdataset cache is ready: {len(dataset)} samples")
+        _dist_barrier()
+        if dataset is None:
+            dataset = load_dataset(**load_kwargs)
+        return dataset
+
+    return load_dataset(**load_kwargs)
+
+
 
 class LazySupervisedMixDataset(Dataset):
     """Dataset for supervised fine-tuning."""
@@ -170,6 +208,8 @@ class LazySupervisedMixDataset(Dataset):
 
         self.data_args = data_args
         list_data_dict = []
+        self._lengths = None
+        self._modality_lengths = None
 
         self.caption_key = getattr(data_args, 'caption_key', 'txt')
 
@@ -189,14 +229,16 @@ class LazySupervisedMixDataset(Dataset):
 
             cache_dir = getattr(data_args, 'data_cache_dir', None)
             num_proc = getattr(data_args, 'num_loading_workers', 32)
+            load_num_proc = 1 if cache_dir is not None else num_proc
 
-            train_dataset = load_dataset(
-                "webdataset",
+            rank0_print("Loading experiment shards from webdataset cache")
+            train_dataset = _load_webdataset(
                 data_files=shards,
                 split="train",
-                num_proc=num_proc,
+                num_proc=load_num_proc,
                 cache_dir=cache_dir,
             )
+            rank0_print(f"Loaded raw experiment dataset: {len(train_dataset)} samples")
 
             # Filter by membership set
             before_count = len(train_dataset)
@@ -206,19 +248,21 @@ class LazySupervisedMixDataset(Dataset):
             )
             rank0_print(f"  filtered: {before_count} -> {len(train_dataset)}")
 
-            # Align with existing pipeline: rename image column, add type
+            # Align with existing pipeline: rename the image column and keep
+            # only the fields needed at training time.
             if "jpg" in train_dataset.column_names:
                 train_dataset = train_dataset.rename_column("jpg", "image")
             elif "png" in train_dataset.column_names:
                 train_dataset = train_dataset.rename_column("png", "image")
 
-            train_dataset = train_dataset.add_column('type', ['T2I'] * len(train_dataset))
-            keep_cols = {"image", "txt", "json", "type"}
+            # Keep the dataset immutable and infer the default source type lazily
+            # in __getitem__ instead of materializing a constant column over all rows.
+            keep_cols = {"image", "txt", "json", "type", "id", "__key__", "__url__"}
             train_dataset = train_dataset.remove_columns(
                 [col for col in train_dataset.column_names
                  if col not in keep_cols]
             )
-            print(f"finish loading experiment: {len(train_dataset)} samples")
+            rank0_print(f"finish loading experiment: {len(train_dataset)} samples")
             list_data_dict.append(train_dataset)
 
         else:
@@ -238,21 +282,23 @@ class LazySupervisedMixDataset(Dataset):
             # Use num_proc=1 when cache exists to avoid multiprocess lock
             # contention on network filesystems during cache validation
             load_num_proc = 1 if cache_dir is not None else num_proc
-            train_dataset = load_dataset(
-                "webdataset",
+            rank0_print("Loading raw webdataset shards")
+            train_dataset = _load_webdataset(
                 data_files=shards,
                 split="train",
                 num_proc=load_num_proc,
                 cache_dir=cache_dir,
             )
+            rank0_print(f"Loaded raw dataset: {len(train_dataset)} samples, columns={train_dataset.column_names}")
 
             if "jpg" in train_dataset.column_names:
                 train_dataset = train_dataset.rename_column("jpg", "image")
             elif "png" in train_dataset.column_names:
                 train_dataset = train_dataset.rename_column("png", "image")
 
-            train_dataset = train_dataset.add_column('type', len(train_dataset) * ['T2I'])
-            keep_cols = {"image", "txt", "json", "type"}
+            # Keep the dataset immutable and infer the default source type lazily
+            # in __getitem__ instead of materializing a constant column over all rows.
+            keep_cols = {"image", "txt", "json", "type", "id", "__key__", "__url__"}
             train_dataset = train_dataset.remove_columns([col for col in train_dataset.column_names if col not in keep_cols])
             rank0_print(f"finish loading: {len(train_dataset)} samples")
             list_data_dict.append(train_dataset)
@@ -261,8 +307,8 @@ class LazySupervisedMixDataset(Dataset):
             list_data_dict = concatenate_datasets(list_data_dict)
         else:
             list_data_dict = list_data_dict[0]
-        list_data_dict = list_data_dict.shuffle(seed=42)
 
+        rank0_print("Skipping dataset-level shuffle; trainer sampler already shuffles batches.")
         rank0_print(f"Total number of training instances: {len(list_data_dict)}")
         self.tokenizer = tokenizer
         self.list_data_dict = list_data_dict
@@ -287,35 +333,78 @@ class LazySupervisedMixDataset(Dataset):
 
     @property
     def lengths(self):
-        length_list = []
-        for sample in self.list_data_dict:
-            img_tokens = 128 if "image" in sample else 0
-            length_list.append(sum(len(conv["value"].split()) for conv in sample["conversations"]) + img_tokens)
-        return length_list
+        self._ensure_length_metadata()
+        return self._lengths
 
     @property
     def modality_lengths(self):
-        length_list = []
-        for sample in self.list_data_dict:
-            cur_len = sum(len(conv["value"].split()) for conv in sample["conversations"])
-            cur_len = cur_len if "image" in sample else -cur_len
-            length_list.append(cur_len)
-        return length_list
+        self._ensure_length_metadata()
+        return self._modality_lengths
+
+    def _get_source_type(self, sample) -> str:
+        return sample.get("type", "T2I")
+
+    def _get_caption_text(self, sample) -> str:
+        txt = sample.get("txt", "") or ""
+        if isinstance(txt, (bytes, bytearray)):
+            txt = txt.decode("utf-8")
+
+        if self.caption_key != "txt" and sample.get("json") is not None:
+            meta = sample["json"]
+            if isinstance(meta, (bytes, bytearray)):
+                meta = meta.decode("utf-8")
+            if isinstance(meta, str):
+                meta = json.loads(meta)
+            if isinstance(meta, dict):
+                txt = meta.get(self.caption_key, txt)
+
+        if txt is None:
+            return ""
+        return txt if isinstance(txt, str) else str(txt)
+
+    def _get_text_length(self, sample) -> int:
+        sample_type = self._get_source_type(sample)
+        if sample_type == "T2I":
+            caption = self._get_caption_text(sample)
+            return 9 + len(caption.split())
+        if sample_type == "I2I":
+            return 6
+        raise ValueError(f"Unknown source type {sample_type}")
+
+    def _ensure_length_metadata(self) -> None:
+        if self._lengths is not None and self._modality_lengths is not None:
+            return
+
+        total_samples = len(self.list_data_dict)
+        progress_interval = max(100000, total_samples // 10) if total_samples else 0
+        rank0_print(f"Computing length metadata for {total_samples} samples")
+
+        has_image = "image" in self.list_data_dict.column_names
+        metadata_dataset = self.list_data_dict.remove_columns(["image"]) if has_image else self.list_data_dict
+        lengths = []
+        modality_lengths = []
+        for idx, sample in enumerate(metadata_dataset):
+            text_len = self._get_text_length(sample)
+            img_tokens = 128 if has_image else 0
+            lengths.append(text_len + img_tokens)
+            modality_lengths.append(text_len if has_image else -text_len)
+
+            if progress_interval and (idx + 1) % progress_interval == 0:
+                rank0_print(f"  computed length metadata for {idx + 1}/{total_samples} samples")
+
+        self._lengths = lengths
+        self._modality_lengths = modality_lengths
+        rank0_print("Finished computing length metadata")
 
     def __getitem__(self, i) -> Dict[str, torch.Tensor]:
 
         while True:
             sources = self.list_data_dict[i]
+            source_type = self._get_source_type(sources)
 
 
-            if sources["type"] == "T2I":
-                # Extract caption: use json field if caption_key != 'txt'
-                txt = sources.get("txt", "")
-                if self.caption_key != "txt" and "json" in sources:
-                    meta = sources["json"]
-                    if isinstance(meta, str):
-                        meta = json.loads(meta)
-                    txt = meta.get(self.caption_key, txt)
+            if source_type == "T2I":
+                txt = self._get_caption_text(sources)
 
                 sources["conversations"] = [
                     {"from": "human", "value": f"Please generate image based on the following caption: {txt}"},
@@ -323,7 +412,7 @@ class LazySupervisedMixDataset(Dataset):
                 ]
 
 
-            elif sources["type"] == "I2I":
+            elif source_type == "I2I":
                 sources["conversations"] = [
                     {
                         "from": "human",
@@ -337,7 +426,7 @@ class LazySupervisedMixDataset(Dataset):
 
             if "image" in sources:
 
-                if sources["type"] == "T2I" or sources["type"] == "I2I":
+                if source_type == "T2I" or source_type == "I2I":
                     image_files = self.list_data_dict[i]["image"]
 
                 if not isinstance(image_files, list):
@@ -347,7 +436,7 @@ class LazySupervisedMixDataset(Dataset):
 
                 for img in image_files:
                     try:
-                        if sources["type"] == "T2I" or sources["type"] == "I2I":
+                        if source_type == "T2I" or source_type == "I2I":
                             img = img.convert("RGB")
                         else:
                             raise ValueError("Unknown source type. Please check the 'type' in 'sources'.")
