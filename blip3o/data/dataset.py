@@ -243,7 +243,8 @@ class LazySupervisedMixDataset(Dataset):
                 rank0_print(f"Loading {len(arrow_files)} arrow files from {data_arrow_dir}")
                 tables = []
                 for f in arrow_files:
-                    tables.append(pa.ipc.open_file(pa.memory_map(f, "r")).read_all())
+                    reader = pa.ipc.open_stream(pa.OSFile(f, "r"))
+                    tables.append(reader.read_all())
                 combined = pa.concat_tables(tables)
                 train_dataset = HFDataset(combined)
                 rank0_print(f"Loaded arrow dataset: {len(train_dataset)} samples")
