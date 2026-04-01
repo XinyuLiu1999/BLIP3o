@@ -212,46 +212,46 @@ class LazySupervisedMixDataset(Dataset):
             elif "png" in train_dataset.column_names:
                 train_dataset = train_dataset.rename_column("png", "image")
 
-            # Extract caption from JSON if caption_key is not 'txt'
-            if self.caption_key != "txt" and "json" in train_dataset.column_names:
-                caption_key = self.caption_key
-                def _extract_caption(sample):
-                    meta = sample["json"]
-                    if isinstance(meta, str):
-                        meta = json.loads(meta)
-                    sample["txt"] = meta.get(caption_key, "")
-                    return sample
-                train_dataset = train_dataset.map(_extract_caption, num_proc=num_proc)
-                rank0_print(f"  extracted caption from json['{caption_key}'] -> txt")
-
             train_dataset = train_dataset.add_column('type', ['T2I'] * len(train_dataset))
+            keep_cols = {"image", "txt", "json", "type"}
             train_dataset = train_dataset.remove_columns(
                 [col for col in train_dataset.column_names
-                 if col not in ("image", "txt", "type")]
+                 if col not in keep_cols]
             )
             print(f"finish loading experiment: {len(train_dataset)} samples")
             list_data_dict.append(train_dataset)
 
         else:
-            # ---- Original path: hardcoded tar loading ----
-            train_dataset = load_dataset("webdataset", data_files='/fsx/home/jiuhai.chen/soda/overfit.tar', split="train", num_proc=1, cache_dir='/fsx/sfr/data/jiuhai/webdataset')
-            train_dataset = train_dataset.rename_column("jpg", "image")
+            # ---- Load all tars from data_dir ----
+            data_dir = getattr(data_args, 'data_dir', None)
+            cache_dir = getattr(data_args, 'data_cache_dir', None)
+            num_proc = getattr(data_args, 'num_loading_workers', 32)
 
-            # Extract caption from JSON if caption_key is not 'txt'
-            if self.caption_key != "txt" and "json" in train_dataset.column_names:
-                caption_key = self.caption_key
-                def _extract_caption(sample):
-                    meta = sample["json"]
-                    if isinstance(meta, str):
-                        meta = json.loads(meta)
-                    sample["txt"] = meta.get(caption_key, "")
-                    return sample
-                train_dataset = train_dataset.map(_extract_caption, num_proc=1)
+            if data_dir is not None:
+                shards = sorted(glob.glob(os.path.join(data_dir, "*.tar")))
+                assert len(shards) > 0, f"No tar files found in {data_dir}"
+                rank0_print(f"Loading all tars from {data_dir}: {len(shards)} shards")
+            else:
+                shards = '/fsx/home/jiuhai.chen/soda/overfit.tar'
+                rank0_print("Warning: using hardcoded overfit.tar fallback")
+
+            train_dataset = load_dataset(
+                "webdataset",
+                data_files=shards,
+                split="train",
+                num_proc=num_proc,
+                cache_dir=cache_dir,
+            )
+
+            if "jpg" in train_dataset.column_names:
+                train_dataset = train_dataset.rename_column("jpg", "image")
+            elif "png" in train_dataset.column_names:
+                train_dataset = train_dataset.rename_column("png", "image")
 
             train_dataset = train_dataset.add_column('type', len(train_dataset) * ['T2I'])
-            train_dataset = train_dataset.remove_columns([col for col in train_dataset.column_names if not col in (
-                ["image", "txt", "type"])])
-            print(f"finish loading image {len(train_dataset)}")
+            keep_cols = {"image", "txt", "json", "type"}
+            train_dataset = train_dataset.remove_columns([col for col in train_dataset.column_names if col not in keep_cols])
+            rank0_print(f"finish loading: {len(train_dataset)} samples")
             list_data_dict.append(train_dataset)
 
         if len(list_data_dict) > 1:
@@ -306,9 +306,16 @@ class LazySupervisedMixDataset(Dataset):
 
 
             if sources["type"] == "T2I":
+                # Extract caption: use json field if caption_key != 'txt'
+                txt = sources.get("txt", "")
+                if self.caption_key != "txt" and "json" in sources:
+                    meta = sources["json"]
+                    if isinstance(meta, str):
+                        meta = json.loads(meta)
+                    txt = meta.get(self.caption_key, txt)
 
                 sources["conversations"] = [
-                    {"from": "human", "value": f"Please generate image based on the following caption: {sources['txt']}"},
+                    {"from": "human", "value": f"Please generate image based on the following caption: {txt}"},
                     {"from": "gpt", "value": "<image>"},
                 ]
 
