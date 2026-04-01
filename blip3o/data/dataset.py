@@ -241,14 +241,13 @@ class LazySupervisedMixDataset(Dataset):
                 arrow_files = sorted(glob.glob(os.path.join(data_arrow_dir, "*.arrow")))
                 assert len(arrow_files) > 0, f"No arrow files found in {data_arrow_dir}"
                 rank0_print(f"Loading {len(arrow_files)} arrow files from {data_arrow_dir}")
-                from concurrent.futures import ThreadPoolExecutor
-                def _read_arrow(path):
-                    return pa.ipc.open_stream(pa.OSFile(path, "r")).read_all()
-                with ThreadPoolExecutor(max_workers=16) as pool:
-                    tables = list(pool.map(_read_arrow, arrow_files))
-                rank0_print(f"Read {len(tables)} arrow files, concatenating...")
-                combined = pa.concat_tables(tables)
-                train_dataset = HFDataset(combined)
+                datasets = []
+                for idx, f in enumerate(arrow_files):
+                    datasets.append(HFDataset.from_file(f))
+                    if (idx + 1) % 500 == 0:
+                        rank0_print(f"  memory-mapped {idx + 1}/{len(arrow_files)} arrow files")
+                rank0_print(f"Memory-mapped {len(arrow_files)} arrow files, concatenating...")
+                train_dataset = concatenate_datasets(datasets)
                 rank0_print(f"Loaded arrow dataset: {len(train_dataset)} samples")
             elif data_dir is not None:
                 # ---- Load from tar files ----
