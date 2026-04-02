@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence
 import pyarrow.parquet as pq
 import torch
+import torch.distributed as dist
 import transformers
 import yaml
 from PIL import Image, ImageFile
@@ -234,7 +235,10 @@ class LazySupervisedMixDataset(Dataset):
 
             if data_arrow_dir is not None:
                 # ---- Fast path: load pre-built arrow files directly ----
-                arrow_files = sorted(glob.glob(os.path.join(data_arrow_dir, "*.arrow")))
+                arrow_files = sorted(glob.glob(os.path.join(data_arrow_dir, "webdataset-*.arrow")))
+                stray = set(glob.glob(os.path.join(data_arrow_dir, "*.arrow"))) - set(arrow_files)
+                if stray:
+                    rank0_print(f"WARNING: ignoring {len(stray)} non-webdataset arrow files in {data_arrow_dir}: {[os.path.basename(f) for f in sorted(stray)]}")
                 assert len(arrow_files) > 0, f"No arrow files found in {data_arrow_dir}"
                 rank0_print(f"Loading {len(arrow_files)} arrow files from {data_arrow_dir}")
                 datasets = []
@@ -287,6 +291,17 @@ class LazySupervisedMixDataset(Dataset):
 
         list_data_dict = list_data_dict.shuffle(seed=42)
         rank0_print(f"Total number of training instances: {len(list_data_dict)}")
+
+        # Clean up HF cache arrow files from the arrow dir to prevent
+        # them from being picked up by future runs that glob *.arrow
+        data_arrow_dir = getattr(data_args, 'data_arrow_dir', None)
+        is_rank0 = not dist.is_initialized() or dist.get_rank() == 0
+        if data_arrow_dir is not None and is_rank0:
+            cache_files = glob.glob(os.path.join(data_arrow_dir, "cache-*.arrow"))
+            if cache_files:
+                for cf in cache_files:
+                    os.remove(cf)
+                rank0_print(f"Cleaned up {len(cache_files)} HF cache files from {data_arrow_dir}")
         self.tokenizer = tokenizer
         self.list_data_dict = list_data_dict
         self.modality = torch.tensor(0) # 0 is for und task, 1 is for gen task
