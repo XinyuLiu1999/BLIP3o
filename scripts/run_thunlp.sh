@@ -33,8 +33,8 @@ export TORCH_HOME=/user/liuxinyu/.cache/torch/hub
 export HF_ENDPOINT=https://hf-mirror.com
 export TRANSFORMERS_CACHE=/user/liuxinyu/.cache/data_juicer/models
 export HF_HUB_CACHE=/user/liuxinyu/.cache/data_juicer/models
-export HF_TOKEN=HF_TOKEN_REMOVED
-export WANDB_API_KEY='e4bb266d6e5a159a1280afa4a476720e92a6dbe7'
+export HF_TOKEN=
+export WANDB_API_KEY=''
 export WANDB_PROJECT='BLIP3o-Pretrain'
 
 # === LOGGING ===

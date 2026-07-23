@@ -12,6 +12,11 @@ from blip3o.model import blip3oQwenForCausalLM
 from blip3o.train.blip3o_trainer import blip3oTrainer
 from blip3o.utils import rank0_print
 from tabulate import tabulate
+_original_load = torch.load
+def _patched_load(f, *args, **kwargs):
+    kwargs.pop('weights_only', None)
+    return _original_load(f, *args, weights_only=False, **kwargs)
+torch.load = _patched_load
 
 torch.multiprocessing.set_sharing_strategy("file_system")
 
