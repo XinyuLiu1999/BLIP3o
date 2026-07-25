@@ -1,2 +1,10 @@
 __pycache__/
 *.pyc
+
+# concept_rebalancing generated artifacts (multi-GB parquet / experiment outputs)
+concept_rebalancing/runs/*/
+!concept_rebalancing/runs/sample/
+concept_rebalancing/runs/sample/*
+!concept_rebalancing/runs/sample/build_viz.py
+experiments/
+blip3o_next.egg-info/

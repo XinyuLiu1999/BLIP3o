@@ -1,0 +1,26 @@
+nohup /root/miniconda3/envs/wiki/bin/python concept_rebalancing/link_corpus.py \
+  --tar_dir /cephfs/liuxinyu/BLIP3o-Pretrain-Long-Caption-filtered-recaptioned \
+  --output_dir concept_rebalancing/runs/blip3o_pretrain \
+  --num_workers 28 \
+  --gpus 0,1 \
+  --resume \
+  > concept_rebalancing/runs/blip3o_pretrain/stage1.log 2>&1 &
+
+CUDA_VISIBLE_DEVICES=0 /root/miniconda3/envs/wiki/bin/python concept_rebalancing/qa_gate.py \
+  --links $RUN/links.parquet \
+  --output_dir $RUN \
+  --total_images 19755541
+
+python concept_rebalancing/build_schedule.py \
+    --links $RUN/links.parquet --index $RUN/index.parquet --output_dir $RUN \
+    --n_high 100000 --n_low 1000 --a_head 2.5 --r_min 0.1 --gamma 0.5 --m_max 3.0
+  
+python concept_rebalancing/materialize_rebalanced.py \
+    --sample_multiplicity $RUN/sample_multiplicity.parquet \
+    --index $RUN/index.parquet \
+    --output_dir experiments/rebalanced_B --name rebalanced_B
+
+python concept_rebalancing/audit.py \
+    --links $RUN/links.parquet --node_multiplicity $RUN/node_multiplicity.parquet \
+    --membership experiments/rebalanced_B/membership.parquet \
+    --counts_names $RUN/counts.parquet --output $RUN/audit_B.json
