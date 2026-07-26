@@ -98,6 +98,39 @@ def sample_multiplicity(node_ms: Iterable[float]) -> float:
     return NO_CONCEPT_MULTIPLICITY if best is None else best
 
 
+def sample_weight_meaninv(node_counts: Iterable[float], alpha: float = 1.0) -> float:
+    """Mean inverse frequency over a sample's concepts — the reduction that works.
+
+    ``max`` and ``geomean`` both reduce the *schedule* ``m_c``, which has already
+    thrown away most of the frequency signal: the mid band is flattened to
+    exactly 1.0 and the tail is clipped at ``m_max``. With 11 concepts per sample
+    almost every sample touches a mid-band concept, so ``max`` is vetoed to 1.0
+    and ``geomean`` averages toward 1.0. Measured at matched budget, neither
+    moves Gini more than 0.007.
+
+    This reduces the *raw counts* instead, and keeps the whole profile::
+
+        w = mean_c (1 / N_c ** alpha)
+
+    A sample of eleven common concepts scores low; one carrying even a few rare
+    concepts scores high, without any single concept vetoing the rest. Because
+    the statistic is a mean rather than an extremum, one ultra-rare concept
+    cannot blow the weight up the way ``1/min(N_c)`` does — measured max repeat
+    134 at alpha=0.5 versus 2.5M for the single-extreme rules — so all 58,834
+    concepts stay covered with no cap needed.
+
+    The result is a relative *weight*, not a multiplicity: it is meaningful only
+    up to scale, and ``build_schedule`` normalizes the weights to the sample
+    budget. Empty (no content concept) -> ``NO_CONCEPT_MULTIPLICITY``.
+    """
+    total = 0.0
+    n = 0
+    for n_c in node_counts:
+        total += 1.0 / (max(float(n_c), 1.0) ** alpha)
+        n += 1
+    return NO_CONCEPT_MULTIPLICITY if n == 0 else total / n
+
+
 def sample_multiplicity_geomean(
     node_ms: Iterable[float], m_max: float = 4.0, m_floor: float = 0.0
 ) -> float:

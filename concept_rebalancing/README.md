@@ -99,19 +99,20 @@ Each arm is one `experiment_dir`, hash-pinned by `membership_hash`.
 ## Trainer wiring (Stage 6)
 
 `materialize_rebalanced.py` writes `config.yaml` with `dataset_cls: rebalanced`
-and a `membership.parquet` carrying integer counts. To make the trainer expand
-those counts into repeated **index entries** (not duplicated bytes), enable the
-multiplicity dataset once at startup — add to `blip3o/train/train.py` (near where
-the data module is built):
+and a `membership.parquet` carrying integer counts, and the trainer expands those
+counts into repeated **index entries** (not duplicated bytes).
 
-```python
-import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "concept_rebalancing"))
-from rebalanced_dataset import register as register_rebalanced
-register_rebalanced()   # makes --dataset_cls rebalanced resolve
-```
+**This is already wired up** — `blip3o/train/train.py` calls
+`rebalanced_dataset.register()` when `--dataset_cls rebalanced` is passed, so no
+manual edit is needed. Just run with
+`--dataset_cls rebalanced --experiment_dir experiments/rebalanced_E`.
 
-then run with `--dataset_cls rebalanced --experiment_dir experiments/rebalanced_B`.
+> **Startup cost — set `--num_loading_workers` low.** The HF `filter` that
+> restricts shards to the membership pickles the key set into *every* worker:
+> measured **491 MB and 6.4 s per worker** for a 14.0M-sample membership. At the
+> `train.py` default of 32 that is **~15.7 GB and ~3.5 min of pure pickling**
+> before training starts. Use `--num_loading_workers 4` (or 8) for a rebalanced
+> run — the filter is I/O-light, so the parallelism buys little here.
 `run_experiment.sh` already reads `actual_samples` (the expanded total) for
 `MAX_STEPS`, so the tail copies are budgeted correctly. The repeats are shuffled
 via the index map (seed 42) so copies land in different batches; the HF rows stay

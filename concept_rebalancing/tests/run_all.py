@@ -12,6 +12,9 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 TESTS = [
     "test_multiplicity.py",
     "test_schedule.py",
+    "test_stratified.py",
+    "test_tail_guard.py",
+    "test_rebalanced_dataset.py",
     "test_pipeline_offline.py",
 ]
 

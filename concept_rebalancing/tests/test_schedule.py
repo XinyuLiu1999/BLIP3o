@@ -22,6 +22,7 @@ from rebalance.schedule import (
     concept_multiplicities,
     sample_multiplicity,
     sample_multiplicity_geomean,
+    sample_weight_meaninv,
 )
 
 CFG = ScheduleConfig()  # plan defaults
@@ -144,6 +145,53 @@ def test_config_validation():
     print("ok: config validation")
 
 
+def test_meaninv_no_concept_retained():
+    assert sample_weight_meaninv([]) == NO_CONCEPT_MULTIPLICITY
+    print("ok: meaninv no-concept -> retain")
+
+
+def test_meaninv_rarer_sample_scores_higher():
+    """The property max/geomean fail: a sample carrying rare concepts must
+    outrank an all-common one even though both also carry a head concept."""
+    common = sample_weight_meaninv([3_500_000, 2_000_000, 900_000], alpha=0.5)
+    rare = sample_weight_meaninv([3_500_000, 2_000_000, 1_270], alpha=0.5)
+    assert rare > common, (rare, common)
+    print("ok: meaninv ranks the rare-bearing sample higher")
+
+
+def test_meaninv_no_single_concept_veto():
+    """Adding one mid-band concept must not collapse the weight the way `max`
+    does — the whole profile still moves the score."""
+    base = sample_weight_meaninv([1_000, 1_000, 1_000], alpha=0.5)
+    plus_mid = sample_weight_meaninv([1_000, 1_000, 1_000, 50_000], alpha=0.5)
+    assert plus_mid < base                       # it dilutes ...
+    assert plus_mid > sample_weight_meaninv([50_000] * 4, alpha=0.5)   # ... but does not veto
+    print("ok: meaninv has no single-concept veto")
+
+
+def test_meaninv_bounded_by_extremes():
+    """A mean lies between the per-concept inverse frequencies — the property
+    that keeps one ultra-rare concept from blowing the weight up (unlike
+    1/min(N_c), which produced 2.5M-fold duplication of a single sample)."""
+    ns = [1, 10_000, 3_500_000]
+    w = sample_weight_meaninv(ns, alpha=0.5)
+    invs = [1.0 / (n ** 0.5) for n in ns]
+    assert min(invs) < w < max(invs)
+    print("ok: meaninv bounded strictly between per-concept extremes")
+
+
+def test_meaninv_alpha_monotone():
+    """Larger alpha must widen the gap between a rare-bearing and a common
+    sample — this is the knob the calibration sweeps."""
+    ratios = []
+    for a in (0.25, 0.5, 1.0):
+        rare = sample_weight_meaninv([3_500_000, 1_270], alpha=a)
+        common = sample_weight_meaninv([3_500_000, 900_000], alpha=a)
+        ratios.append(rare / common)
+    assert ratios[0] < ratios[1] < ratios[2], ratios
+    print("ok: meaninv separation increases with alpha")
+
+
 if __name__ == "__main__":
     test_mid_band_is_retain()
     test_head_downsamples_and_continuous()
@@ -159,4 +207,9 @@ if __name__ == "__main__":
     test_geomean_symmetry()
     test_vectorised_map()
     test_config_validation()
+    test_meaninv_no_concept_retained()
+    test_meaninv_rarer_sample_scores_higher()
+    test_meaninv_no_single_concept_veto()
+    test_meaninv_bounded_by_extremes()
+    test_meaninv_alpha_monotone()
     print("\nAll schedule tests passed.")

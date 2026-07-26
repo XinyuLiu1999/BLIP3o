@@ -57,6 +57,89 @@ def compute_counts(links_path):
     return dict(zip(node_ids, counts))
 
 
+def per_sample_meaninv(links_path, counts, all_sample_keys=None, alpha=0.5,
+                       budget=None, cap=16.0, excluded_nodes=None):
+    """Stage 4-alt: mean-inverse-frequency weighting, normalized to a budget.
+
+    Unlike ``max``/``geomean`` this does *not* consume the Stage-3 ``m_c`` — it
+    reduces the raw ``N_c`` directly (see ``schedule.sample_weight_meaninv`` for
+    why: the schedule has already flattened the mid band to 1.0 and clipped the
+    tail, which is exactly the signal the reduction needs).
+
+        w_s = mean over the sample's concepts of  1 / N_c ** alpha
+        m_s = w_s * budget / Sum(w)        then capped at ``cap``, with the
+                                           clipped mass redistributed
+
+    Returns ``{sample_key: m}`` where ``Sum m == budget``, so the arm is directly
+    comparable to any other at fixed training compute.
+    """
+    table = pq.read_table(links_path, columns=["sample_key", "node_id"])
+    samp_dict = pc.dictionary_encode(
+        table.column("sample_key").cast(pa.large_string()).combine_chunks())
+    node_dict = pc.dictionary_encode(
+        table.column("node_id").cast(pa.large_string()).combine_chunks())
+    del table
+
+    s_idx = samp_dict.indices.to_numpy(zero_copy_only=False)
+    n_idx = node_dict.indices.to_numpy(zero_copy_only=False)
+    keys_list = samp_dict.dictionary.to_pylist()
+    node_vals = node_dict.dictionary.to_pylist()
+    del samp_dict, node_dict
+
+    n_c = np.array([max(float(counts.get(n, 1)), 1.0) for n in node_vals])
+    inv = 1.0 / np.power(n_c, alpha)
+
+    # Guard (rebalance/tail_guard.py): zero out nodes whose weight would be
+    # amplified purely by link noise. Under `max` these were inert; under an
+    # inverse-frequency weight a 12-sample mislinked node outweighs a head
+    # concept ~577x, so they must not contribute.
+    if excluded_nodes:
+        mask = np.array([n in excluded_nodes for n in node_vals], dtype=bool)
+        inv[mask] = 0.0
+        print(f"[stage4] guard: {int(mask.sum()):,} of {len(node_vals):,} nodes "
+              f"excluded from the weight (link-noise amplification)")
+
+    n_samples = len(keys_list)
+    # sum of inv per sample / number of links per sample = the mean
+    w = np.bincount(s_idx, weights=inv[n_idx], minlength=n_samples)
+    deg = np.bincount(s_idx, minlength=n_samples).astype(np.float64)
+    w = np.divide(w, deg, out=np.zeros_like(w), where=deg > 0)
+    del s_idx, n_idx
+
+    n_no_concept = 0
+    if all_sample_keys is not None:
+        # Build the membership set ONCE — rebuilding it inside the comprehension
+        # is O(n^2) and never finishes at 19.7M keys.
+        linked = set(keys_list)
+        extra = [k for k in all_sample_keys if k not in linked]
+        n_no_concept = len(extra)
+        if extra:
+            # a no-concept sample gets the median weight: retained, not boosted
+            keys_list = keys_list + extra
+            w = np.concatenate([w, np.full(len(extra), float(np.median(w[w > 0])))])
+
+    total_budget = float(budget if budget is not None else len(keys_list))
+    m = w * (total_budget / w.sum())
+
+    if cap is not None and cap > 0:
+        # Redistribute the mass clipped off capped samples so Sum m still equals
+        # the budget; iterate because redistribution can push others over.
+        for _ in range(50):
+            over = m > cap
+            excess = float((m[over] - cap).sum())
+            if excess <= 1e-6:
+                break
+            m[over] = cap
+            free = (~over) & (m > 0)
+            if not free.any():
+                break
+            m[free] += excess * (m[free] / m[free].sum())
+
+    print(f"[stage4] meaninv alpha={alpha} cap={cap} budget={total_budget:,.0f} "
+          f"({n_no_concept:,} no-concept samples at median weight)")
+    return dict(zip(keys_list, m.tolist()))
+
+
 def per_sample_multiplicity(links_path, node_m, all_sample_keys=None,
                             reduction="max", m_max=4.0):
     """Stage 4: rarest-wins max over each sample's concepts.
@@ -150,10 +233,30 @@ def main():
     ap.add_argument("--r_min", type=float, default=0.1)
     ap.add_argument("--gamma", type=float, default=0.5)
     ap.add_argument("--m_max", type=float, default=4.0)
-    ap.add_argument("--reduction", choices=["max", "geomean"], default="max",
+    ap.add_argument("--reduction", choices=["max", "geomean", "meaninv"], default="max",
                     help="Stage-4 rule: 'max' = rarest-wins (one mid-band concept "
                          "vetoes all downsampling); 'geomean' = rarity-weighted "
-                         "geometric mean (head intent survives co-occurrence).")
+                         "geometric mean (head intent survives co-occurrence); "
+                         "'meaninv' = mean inverse frequency over the raw N_c, "
+                         "normalized to --budget (measured best: Gini 0.9753 -> "
+                         "0.9488 at equal budget with full concept coverage).")
+    ap.add_argument("--alpha", type=float, default=0.5,
+                    help="meaninv exponent: weight = mean(1/N_c**alpha). Higher "
+                         "flattens more but concentrates the budget on fewer "
+                         "distinct samples (0.5 -> 14.0M of 19.8M).")
+    ap.add_argument("--budget", type=float, default=None,
+                    help="meaninv: total Sum m (default = corpus size, i.e. an "
+                         "equal-compute swap for the unbalanced corpus).")
+    ap.add_argument("--cap", type=float, default=16.0,
+                    help="meaninv: max copies of any one sample; clipped mass is "
+                         "redistributed so Sum m still equals the budget.")
+    ap.add_argument("--no_tail_guard", action="store_true",
+                    help="meaninv: do NOT exclude the reviewed mislinked / "
+                         "split-surface-form nodes (rebalance/tail_guard.py). "
+                         "Only for reproducing pre-guard numbers.")
+    ap.add_argument("--node_names", default=None,
+                    help="tag_to_nodes.parquet — supplies node names the guard "
+                         "needs to detect split surface forms.")
     args = ap.parse_args()
 
     cfg = ScheduleConfig(
@@ -201,8 +304,28 @@ def main():
         idx = pq.read_table(args.index, columns=["sample_key"])
         all_keys = idx.column("sample_key").to_pylist()
     print(f"[stage4] reducing to per-sample multiplicity (reduction={args.reduction})")
-    m_of = per_sample_multiplicity(args.links, node_m, all_sample_keys=all_keys,
-                                   reduction=args.reduction, m_max=args.m_max)
+    if args.reduction == "meaninv":
+        excl = None
+        if not args.no_tail_guard:
+            from rebalance.tail_guard import excluded_nodes  # noqa: E402
+            node_name_map = {}
+            if args.node_names and os.path.exists(args.node_names):
+                nt = pq.read_table(args.node_names, columns=["node_id", "node_name"])
+                node_name_map = dict(zip(nt.column("node_id").to_pylist(),
+                                         nt.column("node_name").to_pylist()))
+                del nt
+            excl = excluded_nodes(counts, node_name_map,
+                                  drop_split_forms=bool(node_name_map))
+            if not node_name_map:
+                print("[stage4] guard: no --node_names given; split-surface-form "
+                      "detection skipped (confirmed mislinks still excluded)")
+        # reduces raw N_c, not node_m — see per_sample_meaninv's docstring
+        m_of = per_sample_meaninv(args.links, counts, all_sample_keys=all_keys,
+                                  alpha=args.alpha, budget=args.budget, cap=args.cap,
+                                  excluded_nodes=excl)
+    else:
+        m_of = per_sample_multiplicity(args.links, node_m, all_sample_keys=all_keys,
+                                       reduction=args.reduction, m_max=args.m_max)
 
     sample_mult_path = os.path.join(args.output_dir, "sample_multiplicity.parquet")
     keys = list(m_of.keys())

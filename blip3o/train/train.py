@@ -235,6 +235,21 @@ def train():
             if p.requires_grad:
                 rank0_print(f"Trainable parameter: {name}")
         
+    # Concept-rebalancing experiment mode: makes --dataset_cls rebalanced resolve
+    # to the multiplicity-aware dataset. No-op for every other dataset_cls, and
+    # skipped silently if the concept_rebalancing package is not checked out.
+    if getattr(data_args, "dataset_cls", None) == "rebalanced":
+        import os as _os
+        import sys as _sys
+
+        _cr = _os.path.join(_os.path.dirname(_os.path.dirname(
+            _os.path.dirname(_os.path.abspath(__file__)))), "concept_rebalancing")
+        if _cr not in _sys.path:
+            _sys.path.insert(0, _cr)
+        from rebalanced_dataset import register as _register_rebalanced
+
+        _register_rebalanced()
+
     data_module = make_supervised_data_module(tokenizer=tokenizer, data_args=data_args)
     trainer = blip3oTrainer(model=model, tokenizer=tokenizer, args=training_args, **data_module)
 

@@ -61,7 +61,12 @@ def realize_count(m: float, h: float) -> int:
     if m <= 0.0:
         return 0
     base = math.floor(m)
-    frac = m - base
+    # `m - base` is not exact in binary floating point: 1.58 - 1 gives
+    # 0.5800000000000001, so a draw of exactly 0.58 would take the extra copy
+    # for an m whose true fractional part is 0.58. Round the fraction back to
+    # the precision m itself can carry (~15 significant digits) so the
+    # comparison matches the decimal the caller wrote.
+    frac = round(m - base, 12)
     return int(base) + (1 if h < frac else 0)
 
 
