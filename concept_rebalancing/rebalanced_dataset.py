@@ -26,7 +26,7 @@ import random
 
 import pyarrow.parquet as pq
 import torch
-from datasets import load_dataset
+from datasets import concatenate_datasets, load_dataset, load_from_disk
 
 from blip3o.data.dataset import LazySupervisedMixDataset
 from blip3o.utils import rank0_print
@@ -81,22 +81,62 @@ class LazySupervisedRebalancedDataset(LazySupervisedMixDataset):
         num_proc = getattr(data_args, "num_loading_workers", 32)
         load_num_proc = 1 if cache_dir is not None else num_proc
 
-        train_dataset = load_dataset(
-            "webdataset",
-            data_files=shards,
-            split="train",
-            num_proc=load_num_proc,
-            cache_dir=cache_dir,
-        )
+        # datasets==2.16.1's webdataset builder cannot run with num_proc>1: it
+        # stores live tar handles in gen_kwargs, which fail to pickle
+        # ("cannot pickle 'ExFileObject'"). scripts/build_arrow_cache_parallel.py
+        # therefore prebuilds the cache one chunk of shards at a time. Each chunk
+        # is keyed by its own data_files, so we must load with the *same* chunking
+        # to hit that cache -- one 3909-shard call would miss it and regenerate
+        # the whole corpus single-process (~6h).
+        #
+        # BLIP3O_ARROW_CONSOLIDATED opts into a save_to_disk corpus built by
+        # scripts/consolidate_arrow_cache.py. Measured at 2000 shards it loaded
+        # in 12.9 min versus ~14 min for the per-chunk path -- not worth the
+        # 911GB, so it stays off by default. A much smaller num_shards may pay
+        # off; it has not been measured.
+        consolidated = os.environ.get("BLIP3O_ARROW_CONSOLIDATED")
+        chunk_size = int(os.environ.get("BLIP3O_ARROW_CHUNK_SIZE", "64"))
+        if consolidated:
+            if not os.path.isdir(consolidated):
+                raise FileNotFoundError(
+                    f"BLIP3O_ARROW_CONSOLIDATED={consolidated} is not a directory. "
+                    f"Build it with scripts/consolidate_arrow_cache.py, or unset "
+                    f"the variable to fall back to the per-chunk cache."
+                )
+            train_dataset = load_from_disk(consolidated)
+        elif cache_dir is not None and chunk_size > 0 and len(shards) > chunk_size:
+            parts = []
+            for i in range(0, len(shards), chunk_size):
+                parts.append(load_dataset(
+                    "webdataset",
+                    data_files=shards[i:i + chunk_size],
+                    split="train",
+                    num_proc=1,
+                    cache_dir=cache_dir,
+                ))
+            train_dataset = concatenate_datasets(parts)
+        else:
+            train_dataset = load_dataset(
+                "webdataset",
+                data_files=shards,
+                split="train",
+                num_proc=load_num_proc,
+                cache_dir=cache_dir,
+            )
         rank0_print(f"Loaded raw experiment dataset: {len(train_dataset)} samples")
 
         before_count = len(train_dataset)
-        keyset = set(count_map.keys())
-        train_dataset = train_dataset.filter(
-            lambda sample: sample["__key__"] in keyset,
-            num_proc=num_proc,
-        )
-        rank0_print(f"  filtered: {before_count} -> {len(train_dataset)}")
+
+        # NOTE: do *not* use .filter() here. It rewrites every surviving row --
+        # including the ~380GB of jpg bytes -- to a new arrow file just to drop
+        # 29% of them, measured at ~450 rows/s/worker (~3h), re-paid by every
+        # rank on every restart. The multiplicity expansion below already skips
+        # rows whose count is 0, so dropping them from the table buys nothing.
+        # Reading the single __key__ column is all the membership test needs.
+        keys = train_dataset["__key__"]
+        kept = sum(1 for k in keys if count_map.get(k, 0) > 0)
+        rank0_print(f"  membership: {before_count} rows -> {kept} kept "
+                    f"(no row rewrite; zero-count rows are skipped below)")
 
         if "jpg" in train_dataset.column_names:
             train_dataset = train_dataset.rename_column("jpg", "image")
@@ -107,9 +147,9 @@ class LazySupervisedRebalancedDataset(LazySupervisedMixDataset):
         )
 
         # ---- multiplicity expansion: build the index map ----
-        # Each kept row's index is repeated `count` times. Missing keys (should
-        # not happen after the filter) contribute 0 copies.
-        keys = train_dataset["__key__"]
+        # Each kept row's index is repeated `count` times. Rows absent from the
+        # membership map contribute 0 copies -- that is what drops the 29% the
+        # old .filter() call used to materialize.
         index_map = []
         for row_idx, key in enumerate(keys):
             c = count_map.get(key, 0)
