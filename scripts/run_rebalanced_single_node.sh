@@ -39,7 +39,37 @@ echo "torchrun : $(command -v torchrun)"
 export CUDA_HOME=${CUDA_HOME:-$CONDA_PREFIX}
 if [ ! -x "$CUDA_HOME/bin/nvcc" ]; then
     echo "ERROR: no nvcc at $CUDA_HOME/bin/nvcc -- deepspeed will fail on import."
-    echo "       Fix: conda install -y -c nvidia cuda-nvcc=12.1"
+    echo "       Fix: conda install -y -c nvidia cuda-version=12.1 cuda-nvcc=12.1 \\"
+    echo "                                       cuda-cudart-dev=12.1 cuda-cccl=12.1"
+    exit 1
+fi
+
+# nvcc alone is NOT enough. zero1.json declares "optimizer": AdamW, so DeepSpeed uses
+# its own FusedAdam and JIT-compiles it inside accelerator.prepare() -- i.e. ~40 min in,
+# after the dataset is up. That compile needs CUDA headers, and cuda-nvcc ships only the
+# compiler: cuda_runtime.h comes from cuda-cudart-dev, while ATen's CUDAContextLight.h
+# also pulls cusparse.h/cublas_v2.h, which exist only in torch's pip wheels
+# (site-packages/nvidia/*/include) and are symlinked into $CONDA_PREFIX/include.
+# Without them one rank dies with "cc1plus: fatal error: cuda_runtime.h: No such file or
+# directory" and the other seven with "ImportError: fused_adam.so: cannot open shared
+# object file". Fail here instead, in one second.
+for _h in cuda_runtime.h cusparse.h cublas_v2.h; do
+    if [ ! -e "$CUDA_HOME/include/$_h" ]; then
+        echo "ERROR: missing $CUDA_HOME/include/$_h -- the fused_adam JIT build will fail."
+        echo "       Fix: conda install -y -c nvidia cuda-cudart-dev=12.1"
+        echo "            for d in \$CONDA_PREFIX/lib/python3.11/site-packages/nvidia/*/include; do"
+        echo "                for f in \$d/*; do ln -sn \"\$f\" \"\$CONDA_PREFIX/include/\$(basename \$f)\" 2>/dev/null; done"
+        echo "            done"
+        exit 1
+    fi
+done
+
+# cuda-cudart-dev's libcudart.so symlink targets its own patch release, so a mismatched
+# cuda-cudart leaves it dangling and the link step fails with "cannot find -lcudart".
+# -e is false on a dangling symlink, which is exactly the case we want to catch.
+if [ ! -e "$CUDA_HOME/lib/libcudart.so" ] && [ ! -e "$CUDA_HOME/lib64/libcudart.so" ]; then
+    echo "ERROR: $CUDA_HOME/lib/libcudart.so is missing or a dangling symlink."
+    echo "       Fix: conda install -y -c nvidia cuda-cudart=12.1.105"
     exit 1
 fi
 
@@ -55,25 +85,59 @@ fi
 # ============================================================
 AR_BACKBONE=Qwen/Qwen3-0.6B
 DIFFUSION=Efficient-Large-Model/SANA1.5_1.6B_1024px_diffusers
-LR=5e-5
-RUN_NAME="Pretrain-rebalanced-E-guarded"
+LR=${LR:-5e-5}
+
+# Overridable so a smoke test can be run without touching the real run's state.
+# RUN_NAME drives output_dir, which train.py globs for "checkpoint-*" and silently
+# resumes from -- a 2-GPU trial that saves into the production dir would make the
+# next 8-GPU run continue from it. Always pass a different RUN_NAME for trials.
+RUN_NAME=${RUN_NAME:-"Pretrain-rebalanced-E-guarded"}
 
 REPO_DIR=/cephfs/liuxinyu/BLIP3o
-EXPERIMENT_DIR=${REPO_DIR}/experiments/rebalanced_E_guarded
+EXPERIMENT_DIR=${EXPERIMENT_DIR:-${REPO_DIR}/experiments/rebalanced_E_guarded}
 DATA_CACHE_DIR=/cephfs/liuxinyu/.cache/blip3o-data
 LOCAL_DIR="/cephfs/liuxinyu/BLIP3o-Pretrain-results/${RUN_NAME}"
 
-# recaptioned 数据的真 caption 在 json 的 long_caption 字段, tar 内 .txt 是旧 caption
-CAPTION_KEY=long_caption
+# tar 内的 .txt 是重标注前的旧 caption, 真 caption 在 json 里 (medium/long/short 三档均存在)。
+# 用 medium_caption 而非 long_caption: 16 卡 `--dataset_cls mix` 基线用的就是它, 而本次 run
+# 要和那个基线对照。同一批 tar 上换字段会让 caption 长度 (medium 465 字符 vs long 677 字符)
+# 混进"重平衡效果"里, 结论就不干净了。
+CAPTION_KEY=${CAPTION_KEY:-medium_caption}
 
 # --- 步数预算 ---
-# 必须按 actual_samples=19,756,413 (含重复拷贝) 算, 不是 distinct_samples=14,040,822,
-# 否则少训 29%。
-ACTUAL_SAMPLES=19756413
-PER_DEVICE_BS=16
-GRAD_ACCUM=1
+# 由 --num_train_epochs 驱动, 不写死步数: HF 在 max_steps<0 时走 epoch 分支
+# (trainer.py:5298 epoch_based = max_steps < 0), 步数 = len_dataloader // grad_accum,
+# 即 floor(样本数/global_batch)。样本数取自数据集本身 (rebalanced 的 index_map 长度 =
+# actual_samples 19,756,413, 含重复拷贝; 不是 distinct_samples 14,040,822, 否则少训 29%)。
+#
+# 这里刻意不再用写死的样本数去算 MAX_STEPS: 那个常数一旦和 EXPERIMENT_DIR 指向的数据集
+# 对不上 (例如 128-shard 冒烟子集只有 535,870 个样本), 就会安静地训错步数。epoch 驱动
+# 永远跟着实际数据集走。冒烟/压测要截断时用 MAX_STEPS=30 覆盖, 正值会盖过 epoch。
+NUM_EPOCHS=${NUM_EPOCHS:-1}
+MAX_STEPS=${MAX_STEPS:--1}
+PER_DEVICE_BS=${PER_DEVICE_BS:-16}
+# 2 而非 1: 16 卡基线是 16x16=256 的 global batch 配 LR 5e-5。8 卡上累积两次才能还原同一个
+# global batch 和同样的 LR 语义; micro-batch 仍是 16, 显存不变 (实测峰值已达 75.4/80 GB,
+# 没有加 per-device batch 的余地)。步数由 epoch 推导, 会自动减半, 样本预算不受影响。
+GRAD_ACCUM=${GRAD_ACCUM:-2}
 GLOBAL_BATCH=$((GPUS_PER_NODE * PER_DEVICE_BS * GRAD_ACCUM))
-MAX_STEPS=$((ACTUAL_SAMPLES / GLOBAL_BATCH))
+SAVE_STEPS=${SAVE_STEPS:-5000}
+
+# 仅用于日志核对, 不参与控制: 从实验目录的 config.yaml 读真实样本数, 预告预期步数,
+# 这样启动一秒后就能确认预算, 不必等一小时数据集加载完才看到。
+ACTUAL_SAMPLES=$(sed -n 's/^actual_samples: *//p' "$EXPERIMENT_DIR/config.yaml" 2>/dev/null)
+
+# Throughput knobs, exposed for benchmarking. Defaults reproduce the original run.
+# GRAD_CKPT=False trades memory for speed and is usually the biggest single win when
+# the 80GB cards have headroom; DL_WORKERS=1 is a likely starvation point given every
+# sample costs a jpg decode + tokenization.
+GRAD_CKPT=${GRAD_CKPT:-True}
+DL_WORKERS=${DL_WORKERS:-1}
+# modality_lengths is a constant [128]*N (rebalanced_dataset.py), so length grouping
+# sorts a 19.7M list to no effect. Kept on by default to match the original run.
+GROUP_BY_MODALITY=${GROUP_BY_MODALITY:-True}
+# Report peak GPU memory in the final metrics -- needed to know if batch size can grow.
+SKIP_MEM_METRICS=${SKIP_MEM_METRICS:-True}
 
 # ============================================================
 # ENVIRONMENT (对齐 ~/.bashrc 的本集群路径)
@@ -107,11 +171,22 @@ echo "============================================"
 echo "=== Rebalanced Single-Node Run ==="
 echo "  HOSTNAME:        $(hostname)"
 echo "  GPUS_PER_NODE:   $GPUS_PER_NODE"
+echo "  RUN_NAME:        $RUN_NAME"
+echo "  OUTPUT_DIR:      $LOCAL_DIR"
 echo "  EXPERIMENT_DIR:  $EXPERIMENT_DIR"
 echo "  CAPTION_KEY:     $CAPTION_KEY"
-echo "  GLOBAL_BATCH:    $GLOBAL_BATCH"
-echo "  ACTUAL_SAMPLES:  $ACTUAL_SAMPLES"
-echo "  MAX_STEPS:       $MAX_STEPS"
+echo "  GLOBAL_BATCH:    $GLOBAL_BATCH  (${GPUS_PER_NODE} x ${PER_DEVICE_BS} x ${GRAD_ACCUM})"
+if [ "$MAX_STEPS" -lt 0 ]; then
+    echo "  步数控制:        --num_train_epochs $NUM_EPOCHS (步数由数据集长度推导)"
+    if [ -n "$ACTUAL_SAMPLES" ]; then
+        echo "  ACTUAL_SAMPLES:  $ACTUAL_SAMPLES  (来自 $(basename $EXPERIMENT_DIR)/config.yaml)"
+        echo "  预期步数:        ~$((ACTUAL_SAMPLES * NUM_EPOCHS / GLOBAL_BATCH))  <- 与训练日志里的 Total optimization steps 核对"
+    else
+        echo "  ACTUAL_SAMPLES:  (config.yaml 未提供, 无法预告步数)"
+    fi
+else
+    echo "  步数控制:        --max_steps $MAX_STEPS (正值, 盖过 epoch)"
+fi
 echo "  LR:              $LR"
 echo "============================================"
 nvidia-smi --query-gpu=index,name,memory.total,driver_version --format=csv
@@ -138,18 +213,19 @@ torchrun \
     --dispatch_batches False \
     --mm_vision_select_layer -2 \
     --mm_use_im_start_end True \
-    --group_by_modality_length True \
+    --group_by_modality_length ${GROUP_BY_MODALITY} \
     --image_aspect_ratio square \
     --mm_patch_merge_type flat \
     --bf16 True \
     --run_name $RUN_NAME \
     --output_dir ${LOCAL_DIR} \
+    --num_train_epochs ${NUM_EPOCHS} \
     --max_steps ${MAX_STEPS} \
     --per_device_train_batch_size ${PER_DEVICE_BS} \
     --per_device_eval_batch_size 4 \
     --gradient_accumulation_steps ${GRAD_ACCUM} \
     --save_strategy "steps" \
-    --save_steps 5000 \
+    --save_steps ${SAVE_STEPS} \
     --save_total_limit 5 \
     --learning_rate ${LR} \
     --weight_decay 0. \
@@ -159,13 +235,14 @@ torchrun \
     --logging_steps 10 \
     --tf32 True \
     --model_max_length 2048 \
-    --gradient_checkpointing True \
-    --dataloader_num_workers 1 \
+    --gradient_checkpointing ${GRAD_CKPT} \
+    --dataloader_num_workers ${DL_WORKERS} \
     --lazy_preprocess True \
     --report_to wandb \
     --torch_compile True \
     --torch_compile_backend inductor \
-    --dataloader_drop_last True
+    --dataloader_drop_last True \
+    --skip_memory_metrics ${SKIP_MEM_METRICS}
 
 EXIT_CODE=$?
 echo ">>> Training finished with exit code: $EXIT_CODE"
